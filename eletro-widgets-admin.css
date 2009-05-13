@@ -1,0 +1,41 @@
+div.itemDrag {
+	/* border: 1px solid #ccc; */
+}
+
+div.itemDrag h2.itemDrag {
+	cursor: move;
+}
+
+div.itemDrag h2.itemDrag a {
+    cursor: pointer;
+    font-size: 0.7em;
+    position: absolute;
+    top: 6px;
+}
+
+div.recebeDrag {
+	border: 1px dashed #ccc;
+}
+
+div.itemDrag h2.itemDrag a.edit {
+    right: 28px;
+    background-image: url("img/application_edit.png");
+    height:16px;
+    width: 16px;
+}
+
+div.itemDrag h2.itemDrag a.remove {
+    right: 5px;
+    background-image: url("img/application_delete.png");
+    height:16px;
+    width: 16px;
+}
+
+div.itemDrag h2.itemDrag a:hover {
+    text-decoration: underline;
+}
+
+.dragAjuda {
+	border: 3px dashed #0066cc;
+	
+}

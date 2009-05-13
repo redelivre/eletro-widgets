@@ -23,15 +23,15 @@ Allows you to use the power and flexibility of the WordPress Widgets to set up a
 The basics:
 
 Go to the theme file where you want to put eletro-widgets and add the following code:
-
+<code>
 <?php if class_exists('EletroWidgets') new EletroWidgets(); ?>
-
+</code>
 This will create a two column container on your site where you will be able to add the widgets.
 
 The first paramater it takes is the number of columns you want your container to have. So, if you want a 3 columns container, this is what you have to do:
-
+<code>
 <?php if class_exists('EletroWidgets') new EletroWidgets(3); ?>
-
+</code>
 
 == Customizing the appearance of the widgets ==
 
@@ -49,10 +49,10 @@ For example, you can have one line with 3 columns of widgets, and another set of
 In order to do that, all you have to do is declare a new instance of EletroWidgets passing the second parameter, wich is the unique ID for this container.
 
 Example:
-
+<code>
 <?php if class_exists('EletroWidgets') new EletroWidgets(); ?>
 <?php if class_exists('EletroWidgets') new EletroWidgets(3, 2); ?>
-
+</code>
 Note: There MUST be at least one container with the ID 0 (zero). All you have to do is declare at least one EletroWidget leaving the ID parameter empty
 
 After that, make sure you have styles for all the containers in your eletro-widgets.css file. There are examples in this file so you can create as much containers as you need.

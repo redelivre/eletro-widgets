@@ -1,4 +1,4 @@
-=== postTabs ===
+=== Eletro Widgets ===
 Contributors: HackLab
 Donate link: 
 Tags: widgets, home, cms

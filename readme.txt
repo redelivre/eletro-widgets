@@ -17,7 +17,7 @@ Allows you to use the power and flexibility of the WordPress Widgets to set up a
 1. Download the package
 2. Upload to the plugins folder
 3. Activate it
-4. See Usage for more details on how to configure and use this plugin
+4. See Other Notes for more details on how to configure and use this plugin
 
 == Usage ==
 

@@ -25,7 +25,7 @@ The basics:
 
 Go to the theme file where you want to put eletro-widgets and add the following code:
 <code>
-<?php if class_exists('EletroWidgets') new EletroWidgets(); ?>
+<?php if (class_exists('EletroWidgets')) new EletroWidgets(); ?>
 </code>
 This will create a two column container on your site where you will be able to add the widgets.
 

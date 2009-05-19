@@ -31,7 +31,7 @@ This will create a two column container on your site where you will be able to a
 
 The first paramater it takes is the number of columns you want your container to have. So, if you want a 3 columns container, this is what you have to do:
 <code>
-<?php if class_exists('EletroWidgets') new EletroWidgets(3); ?>
+<?php if (class_exists('EletroWidgets')) new EletroWidgets(3); ?>
 </code>
 
 == Customizing the appearance of the widgets ==
@@ -51,8 +51,8 @@ In order to do that, all you have to do is declare a new instance of EletroWidge
 
 Example:
 <code>
-<?php if class_exists('EletroWidgets') new EletroWidgets(); ?>
-<?php if class_exists('EletroWidgets') new EletroWidgets(3, 2); ?>
+<?php if (class_exists('EletroWidgets')) new EletroWidgets(); ?>
+<?php if (class_exists('EletroWidgets')) new EletroWidgets(3, 2); ?>
 </code>
 Note: There MUST be at least one container with the ID 0 (zero). All you have to do is declare at least one EletroWidget leaving the ID parameter empty
 

@@ -34,6 +34,10 @@ The first paramater it takes is the number of columns you want your container to
 <?php if (class_exists('EletroWidgets')) new EletroWidgets(3); ?>
 </code>
 
+After putting the code above in a template file, go to any of the pages that uses this template (logged with an user with administrative privileges) and you will be able to add or remove widgets from the Eletro Widgets area. You can add a Wordpress default widget or you can create your own widget (see http://www.emanueleferonato.com/2008/02/15/how-to-create-a-wordpress-widget/).
+
+ATTENTION: there are some default Wordpress widgets that doesn't work with Eletro Widgets (we are working on this issue for future releases)
+
 == Customizing the appearance of the widgets ==
 
 Eletro Widgets comes with a default css stylesheet that you can customize to fit your theme.

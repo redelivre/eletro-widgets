@@ -50,7 +50,7 @@ class EletroWidgets {
         }
         
         echo "<div id='eletro_widgets_container_$id' class='eletro_widgets_container'>";
-            echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id' action='/wp284/wp-content/plugins/eletro-widgets/eletro-widgets-ajax.php'>";
+            echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id' action='/eletrowidgets/wp-content/plugins/eletro-widgets/eletro-widgets-ajax.php'>";
                 if (current_user_can('manage_eletro_widgets'))
                     echo "<div id='eletro_widgets_control'>" . __('Add new Widget: ', 'eletrow') . "<select id='eletro_widgets_add' name='eletro_widgets_add'>$selectBox</select><input type='button' value='".__('Add', 'eletrow')."' id='eletro_widgets_add_button'></div>";    
 
@@ -103,8 +103,8 @@ function print_eletro_widgets($name, $refresh = false) {
         $callback = $wp_registered_widgets[$name]['callback'];
         $niceName = __($wp_registered_widgets[$name]['name']);
         $callbackControl = $wp_registered_widget_controls[$name]['callback'];
-        #var_dump($callbackControl);
-        #var_dump(get_option($callbackControl[0]->option_name));
+        //        var_dump($callbackControl);
+        //        var_dump(get_option($callbackControl[0]->option_name));
         if (current_user_can('manage_eletro_widgets')) {
 			$params = array(array(
 				'name' => 'Eletro Widgets',

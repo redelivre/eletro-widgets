@@ -1,38 +1,40 @@
 <?php
-    $cacheFile = "../../uploads/debug.html";
-    ob_start();
-    
-    
-var_dump($_REQUEST);
 
 require_once('../../../wp-config.php');
 
+if (0) {
+    $cacheFile = "/tmp/debug.html";
+    ob_start();
+    echo "<pre>";
+    
+    
+    var_dump($_REQUEST);
+    $fp = fopen($cacheFile, "w");
+    fwrite($fp, ob_get_contents());
+    fclose($fp);
+    
+    ob_end_flush();
+    
+}
 
 
-
-
-echo 'abv';
-	
-
-global $wp_registered_widgets, $wp_registered_widget_controls;
+global $wp_registered_widgets, $wp_registered_widget_controls, $wp_registered_widget_updates;
 
 
 
 switch ($_POST['action']) {
-	case 'save_widget_options':
-		
-		
-		print_r($_POST); 
-        $name = $_POST['eletro_widgetToSave_id'];
-		$callback = $wp_registered_widget_controls[$name]['callback'][0];
-		
-		foreach ($_POST as $name => $value) {
-			if (preg_match('/^widget-' . $callback->base_id . '/', $name)) {
-				
-			} 
-		}
-		
-        $object->update($x, $object);
+    case 'save_widget_options':
+        //      echo "<pre>"; var_dump($wp_registered_widget_updates); exit;
+        $id = $_POST['eletro_widgetToSave_id'];
+        $widget_name = $wp_registered_widget_controls[$id]['callback'][0]->id_base;
+        $update = $wp_registered_widget_updates[$widget_name];
+
+        $callback =& $update['callback'];
+        $params =& $update['params'];
+
+        if (is_callable($callback)) 
+            call_user_func_array($callback, $params);
+
         break;
 		
     case 'add':
@@ -67,12 +69,5 @@ switch ($_POST['action']) {
         }
 }
 
-
-	$fp = fopen($cacheFile, "w");
-	fwrite($fp, ob_get_contents());
-	fclose($fp);
-	
-    ob_end_flush();
-  
 
 ?>

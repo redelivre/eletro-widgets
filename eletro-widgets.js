@@ -16,24 +16,28 @@ jQuery.extend(eletroCanvas.prototype, {
         this.id = 'eletro_widgets_container_' + id;
         this.index = id;
         this.columns = new Array()
-        var este_canvas = this;
+        var this_canvas = this;
         
         jQuery('#' + this.id).find('.recebeDrag').each(function() {
-            este_canvas.columns.push(new eletroColumn(this.id, este_canvas));
+            this_canvas.columns.push(new eletroColumn(this.id, this_canvas));
         });
         
         //behavior do botao add
         jQuery('#' + this.id).find('#eletro_widgets_add_button').click(function() {
-            este_canvas.add();
+            this_canvas.add();
         });
         
         //ajax form
         jQuery('#eletro_widgets_form_'+this.index).ajaxForm(function() { 
 
             //recarregar widget
-            este_canvas.refreshItem(refreshWidget);
+            //this_canvas.refreshItem(refreshWidget);
 
-        }); 
+        });
+        
+        jQuery('#' + this.id + ' .save').click(function() {
+        	jQuery('#' + this_canvas.id + ' #eletro_widgetToSave_id').val(jQuery(this).attr('name'));
+        });
     
     },
     
@@ -125,7 +129,7 @@ jQuery.extend(eletroCanvas.prototype, {
     
     refreshItem: function(widget) {
     
-        var este_reload = this;
+        var this_reload = this;
         widgetContent = jQuery.ajax({
                 type: 'POST',
                 url: eletro_widgets_ajax_url,
@@ -138,8 +142,8 @@ jQuery.extend(eletroCanvas.prototype, {
                 },
                 complete: function() 
                 {
-                    jQuery('#' + este_reload.id).find('#' + widget).html(widgetContent.responseText);
-                    new eletroItem(widget, este_reload);
+                    jQuery('#' + this_reload.id).find('#' + widget).html(widgetContent.responseText);
+                    new eletroItem(widget, this_reload);
                 }
             });
     
@@ -216,7 +220,7 @@ jQuery.extend(eletroItem.prototype, {
         //adicionar controles e behaviors
         jQuery('#' + canvas.id).find('#' + id).children('.eletro_widgets_control').hide();
         jQuery('#' + canvas.id).find('#' + id).find('h2.itemDrag').append('<a alt="edit" class="edit"></a>').append('<a alt="remove" class="remove"></a>');
-        jQuery('#' + canvas.id).find('#' + id).find('.eletro_widgets_control').append('<input class="save" type="submit" value="Save">');
+        jQuery('#' + canvas.id).find('#' + id).find('.eletro_widgets_control').append('<input class="save" name="' + this.id + '" type="submit" value="Save">');
 
 
         jQuery('#' + canvas.id).find('#' + id).find('h2 a.edit').click(function() {

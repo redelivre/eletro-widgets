@@ -4,7 +4,9 @@ Plugin Name: Eletro Widgets
 Plugin URI: 
 Description: Allows you to use the power and flexibility of the WordPress Widgets to set up a dynamic area anywhere in your site and manage multiple columns of widgets, dragging and dropping them around
 Author: HackLab
-Version: 0.1 beta
+Version: 0.2 beta
+
+development version
 
 */
 
@@ -48,11 +50,13 @@ class EletroWidgets {
         }
         
         echo "<div id='eletro_widgets_container_$id' class='eletro_widgets_container'>";
-            echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id'>";
+            echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id' action='/wp284/wp-content/plugins/eletro-widgets/eletro-widgets-ajax.php'>";
                 if (current_user_can('manage_eletro_widgets'))
                     echo "<div id='eletro_widgets_control'>" . __('Add new Widget: ', 'eletrow') . "<select id='eletro_widgets_add' name='eletro_widgets_add'>$selectBox</select><input type='button' value='".__('Add', 'eletrow')."' id='eletro_widgets_add_button'></div>";    
 
                 echo "<input type='hidden' name='eletro_widgets_id' id='eletro_widgets_id' value='$id'>";
+                echo "<input type='hidden' name='eletro_widgetToSave_id' id='eletro_widgetToSave_id' value=''>";
+                echo "<input type='hidden' name='action' value='save_widget_options'>";
                 
                 $options = get_option('eletro_widgets');
                 $colunas = $options[$id]; // load saved widgets
@@ -92,11 +96,15 @@ class EletroWidgets {
 
 function print_eletro_widgets($name, $refresh = false) {
     global $wp_registered_widgets, $wp_registered_widget_controls;
+
+    require_once(ABSPATH . 'wp-admin/includes/template.php'); 
+
     if ($name) {
         $callback = $wp_registered_widgets[$name]['callback'];
         $niceName = __($wp_registered_widgets[$name]['name']);
         $callbackControl = $wp_registered_widget_controls[$name]['callback'];
-        
+        #var_dump($callbackControl);
+        #var_dump(get_option($callbackControl[0]->option_name));
         if (current_user_can('manage_eletro_widgets')) {
 			$params = array(array(
 				'name' => 'Eletro Widgets',
@@ -108,7 +116,6 @@ function print_eletro_widgets($name, $refresh = false) {
 				
 			));
 		} else {
-	    
 			$params = array(array(
 				'name' => 'Eletro Widgets',
 				'id' => 'eletrowidgets',
@@ -116,10 +123,13 @@ function print_eletro_widgets($name, $refresh = false) {
 				'after_widget' => '',
 				'before_title' => '<h2>',
 				'after_title' => '</h2>',
-				
 			));
 		}
-		        
+    
+		// is array indicates that the widgets uses the 2.8+ widget API
+		if (is_array($callback)) 
+			$params[] = $callback[0]->number;
+		
         if (!$refresh) 
             echo "<div id='$name' class='itemDrag' alt='$niceName'>";
             
@@ -133,11 +143,16 @@ function print_eletro_widgets($name, $refresh = false) {
 
         echo '</div>';
         
+        $controlParam = '';
+        // is array indicates that the widgets uses the 2.8+ widget API
+        if (is_array($callbackControl))
+            $controlParam = $callbackControl[0]->number;
+        
         // Control
         if (current_user_can('manage_eletro_widgets')) {
             echo "<div class='eletro_widgets_control'>";
                 if ( is_callable($callbackControl) ) {
-                    call_user_func_array($callbackControl, '');                
+                    call_user_func_array($callbackControl, $controlParam);                
                 } else {
                      _e('There are no options for this widget.');
                 }
@@ -146,9 +161,7 @@ function print_eletro_widgets($name, $refresh = false) {
                 
         if (!$refresh) 
             echo "</div>";
-		
     }
-
 }
     
 function defineAsEletroWidget($widgetName) {

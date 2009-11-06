@@ -39,3 +39,7 @@ div.itemDrag h2.itemDrag a:hover {
 	border: 3px dashed #0066cc;
 	
 }
+
+.widget_add_control {
+    display:none;
+}

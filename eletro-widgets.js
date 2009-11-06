@@ -23,22 +23,25 @@ jQuery.extend(eletroCanvas.prototype, {
         });
         
         //behavior do botao add
-        jQuery('#' + this.id).find('#eletro_widgets_add_button').click(function() {
-            this_canvas.add();
+        jQuery('#' + this.id).find('.eletro_widgets_add_button').click(function() {
+            this_canvas.add(jQuery(this));
+        });
+        
+        // select behaviour 
+        jQuery('#' + this.id).find('#eletro_widgets_add').change(function() {
+        	jQuery('#' + this_canvas.id).find('.widget_add_control').hide();
+        	if (jQuery(this).val()) {
+        		jQuery('#' + this_canvas.id).find('#widget_add_control_' + jQuery(this).val()).show();
+        	}
         });
         
         //ajax form
+        /*
         jQuery('#eletro_widgets_form_'+this.index).ajaxForm(function() { 
-
             //recarregar widget
             //this_canvas.refreshItem(refreshWidget);
-
         });
-        
-        jQuery('#' + this.id + ' .save').click(function() {
-        	jQuery('#' + this_canvas.id + ' #eletro_widgetToSave_id').val(jQuery(this).attr('name'));
-        });
-    
+        */
     },
     
     save: function() {
@@ -47,12 +50,12 @@ jQuery.extend(eletroCanvas.prototype, {
         var save_este = this;
         
         values = this.getCurrentWidgets();
-        for (var i=0; i<values.length; i++) {
+        //for (var i=0; i<values.length; i++) {
         
-            if (values[i].constructor.toString().indexOf("Array")) values[i] = values[i].join('X|X');
+        //    if (values[i].constructor.toString().indexOf("Array")) values[i] = values[i].join('X|X');
         
-        }
-        values = values.join('X||X');
+        //}
+        //values = values.join('X||X');
         
         debug = jQuery.ajax({
             type: 'POST',
@@ -61,7 +64,7 @@ jQuery.extend(eletroCanvas.prototype, {
              data: 
             {
                 action: 'save',
-                value: values,
+                'value[]': values,
                 id: save_este.index
             },
             complete: function() {jQuery("#debug").append(debug.responseText)}
@@ -69,8 +72,21 @@ jQuery.extend(eletroCanvas.prototype, {
     
     },
     
-    add: function() {
+    add: function(button) {
         var este_add = this;
+        var widget_type = button.siblings('.add').val();
+        if (widget_type == 'multi') {
+        	var number = button.siblings('.multi_number').val();
+        	//var name = button.siblings('.widget-id').val().replace('__i__', number);
+        	var name = button.siblings('.widget-id').val();
+        	
+        	var id_base = button.siblings('.id_base').val();
+        	var newName = id_base + '-' + number;
+        	
+        	button.siblings('.multi_number').val( parseInt(button.siblings('.multi_number').val()) + 1 );
+        } else {
+        	var name = button.siblings('.widget-id').val();
+        }
         widgetContent = jQuery.ajax({
                 type: 'POST',
                 url: eletro_widgets_ajax_url,
@@ -78,13 +94,14 @@ jQuery.extend(eletroCanvas.prototype, {
                 data: 
                 {
                     action: 'add',
-                    name: jQuery('#' + este_add.id).find('#eletro_widgets_add').val()
+                    number: number,
+                    id_base: id_base, 
+                    name: name
                 },
                 complete: function() 
                 {
                     jQuery('#' + este_add.id).find('#eletro_widgets_col_0').prepend(widgetContent.responseText);
-                    new eletroItem(jQuery('#' + este_add.id).find('#eletro_widgets_add').val(), este_add);  
-                    jQuery('#eletro_widgets_add').val('');
+                    new eletroItem(newName, este_add);  
                     este_add.save();
                 }
             });
@@ -100,8 +117,16 @@ jQuery.extend(eletroCanvas.prototype, {
         
         jQuery('#' + this.id).find('.recebeDrag').each(function() {
             var thisItems = new Array();
-            jQuery(this).find('.itemDrag:not(".ui-sortable-helper")').each(function() {
-                thisItems.push(this.id);
+            jQuery(this).find('div.itemDrag:not(".ui-sortable-helper")').each(function() {
+                var number = jQuery(this).children('input[name=widget-number]').val();
+                var id = jQuery(this).children('input[name=widget-id]').val();
+                
+                //var widget = new Array();
+                //widget.push(id);
+                //widget.push(number);
+                var widget = id + 'X|X' + number;
+                //alert(widget);
+            	thisItems.push(widget);
             });            
             values.push(thisItems);
         });
@@ -111,20 +136,14 @@ jQuery.extend(eletroCanvas.prototype, {
     },
     
     updateControl: function(widget, disable) {
-    
+    //alert(widget);
         var wOption = jQuery('#' + this.id).find('option[value="'+widget+'"]');
-        if (disable) {
+        if (disable  ) {
             wOption.attr('disabled', 'disabled');
         } else {
             wOption.removeAttr('disabled');
         }
-        /*
-        if (wOption.attr('disabled')==true) {
-            wOption.removeAttr('disabled');
-        } else {
-            wOption.attr('disabled', 'disabled');
-        }
-        */
+
     },
     
     refreshItem: function(widget) {
@@ -213,14 +232,14 @@ jQuery.extend(eletroItem.prototype, {
    container: '',
 
     init: function(id, canvas) {
-        // do initialization here
+
         this.id = id;
         var este_item = this;
-        
+
         //adicionar controles e behaviors
+
         jQuery('#' + canvas.id).find('#' + id).children('.eletro_widgets_control').hide();
         jQuery('#' + canvas.id).find('#' + id).find('h2.itemDrag').append('<a alt="edit" class="edit"></a>').append('<a alt="remove" class="remove"></a>');
-        jQuery('#' + canvas.id).find('#' + id).find('.eletro_widgets_control').append('<input class="save" name="' + this.id + '" type="submit" value="Save">');
 
 
         jQuery('#' + canvas.id).find('#' + id).find('h2 a.edit').click(function() {
@@ -235,6 +254,29 @@ jQuery.extend(eletroItem.prototype, {
         jQuery('#' + canvas.id).find('#' + id).find('input.save').click(function() {
             refreshWidget = este_item.id;
             canvas.updateControl(id, false);
+        });
+        
+        jQuery('#' + canvas.id).find('#' + id).find('.save').click(function() {
+        	
+        	//var widget_id = jQuery(this).parents('div.itemDrag').children('.widget-id').val();
+        	//var widget_number = jQuery(this).parents('div.itemDrag').children('.widget-number').val();
+        	//jQuery('#' + canvas.id + ' input[name=eletro_widgetToSave_id]').val(widget_id);
+        	//jQuery('#' + canvas.id + ' input[name=eletro_widgetToSave_number]').val(widget_number);
+        	
+        	
+        	var data = jQuery(this).parents('div.itemDrag').find('input').serialize();
+        	
+        	debug = jQuery.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: eletro_widgets_ajax_url,
+                data: data,
+                complete: function() {jQuery("#debug").append(debug.responseText)}
+            });
+        	
+        	
+        	
+        	
         });
         
         canvas.updateControl(id, true);

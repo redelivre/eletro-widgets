@@ -26,13 +26,11 @@ define('EW_URLPATH', WP_CONTENT_URL.'/plugins/'.plugin_basename( dirname(__FILE_
 
 ////////////////////////////
 
-
 class EletroWidgets {
 
     var $displayOnlyEletroWidgets = false;
 
     function EletroWidgets($cols = 2, $id = 0) {
-
         global $wp_registered_widgets;
         
         if ($id == 0)
@@ -40,41 +38,39 @@ class EletroWidgets {
         
         echo "<div class='eletro_widgets_separator'></div>";
         
-
-        
         // print add select box and button
         $selectBox = "<option value='' >".__('Select')."</option>";
         $done = array();
         
-        
         echo "<div id='eletro_widgets_container_$id' class='eletro_widgets_container'>";
-            echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id' action='/wp284/wp-content/plugins/eletro-widgets/eletro-widgets-ajax.php'>";
-                if (current_user_can('manage_eletro_widgets'))
-                    echo "<div id='eletro_widgets_control'>" . __('Add new Widget: ', 'eletrow');
+        echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id' action='/wp284/wp-content/plugins/eletro-widgets/eletro-widgets-ajax.php'>";
+        if (current_user_can('manage_eletro_widgets'))
+            echo "<div id='eletro_widgets_control'>" . __('Add new Widget: ', 'eletrow');
                     
-                    $this->list_widgets();
-                    
-                    echo "</div>";
-                    #echo "<input type='button' value='".__('Add', 'eletrow')."' id='eletro_widgets_add_button'></div>";    
+        $this->list_widgets();
+            
+        echo "</div>";
+        #echo "<input type='button' value='".__('Add', 'eletrow')."' id='eletro_widgets_add_button'></div>";    
 
-                echo "<input type='hidden' name='eletro_widgets_id' id='eletro_widgets_id' value='$id'>";
-                echo "<input type='hidden' name='eletro_widgetToSave_id' value=''>";
-                echo "<input type='hidden' name='eletro_widgetToSave_number' value=''>";
-                echo "<input type='hidden' name='action' value='save_widget_options'>";
-                
-                $options = get_option('eletro_widgets');
-                $options = $options['canvas'];
-                $colunas = $options[$id]; // load saved widgets
-                for ($i=0; $i<$cols; $i++) {
-                    echo "<div class='recebeDrag' id='eletro_widgets_col_$i'>";
-                        if (is_array($colunas[$i])) {
-                            foreach ($colunas[$i] as $w) {
-                                print_eletro_widgets($w['id'], $w['number']);
-                            }
-                        }
-                    echo "</div>";
+        echo "<input type='hidden' name='eletro_widgets_id' id='eletro_widgets_id' value='$id'>";
+        echo "<input type='hidden' name='eletro_widgetToSave_id' value=''>";
+        echo "<input type='hidden' name='eletro_widgetToSave_number' value=''>";
+        echo "<input type='hidden' name='action' value='save_widget_options'>";
+        
+        $options = get_option('eletro_widgets');
+        $options = $options['canvas'];
+        $colunas = $options[$id]; // load saved widgets
+
+        for ($i=0; $i<$cols; $i++) {
+            echo "<div class='recebeDrag' id='eletro_widgets_col_$i'>";
+            if (is_array($colunas[$i])) {
+                foreach ($colunas[$i] as $w) {
+                    print_eletro_widgets($w['id'], $w['number']);
                 }
-            echo "</form>";
+            }
+            echo "</div>";
+        }
+        echo "</form>";
         echo "</div>";
     }
     
@@ -82,8 +78,8 @@ class EletroWidgets {
 	    $options = get_option('eletro_widgets');
 	    $number = 1;
         $numbers = array();
-	    if (is_array($options['widgets'][$id])) {
-	    	
+        
+	    if (is_array($options['widgets'][$id])) {	    	
 	    	foreach($options['widgets'][$id] as $n => $op) {
 	    		$numbers[] = $n;
 	    	}
@@ -100,28 +96,24 @@ class EletroWidgets {
 	    $sort = $wp_registered_widgets;
 	    usort( $sort, create_function( '$a, $b', 'return strnatcasecmp( $a["name"], $b["name"] );' ) );
 	    $done = array();
-        
-	    
+
 	    $selectBox = "<option value='' >".__('Select')."</option>";
 	    $addControls = '';
         
-	    foreach ( $sort as $widget ) {
-	        if ( in_array( $widget['callback'], $done, true ) ) // We already showed this multi-widget
+	    foreach ($sort as $widget) {
+	        if (in_array($widget['callback'], $done, true)) // We already showed this multi-widget
 	            continue;
 	
-	        $sidebar = is_active_widget( $widget['callback'], $widget['id'], false, false );
+	        $sidebar = is_active_widget($widget['callback'], $widget['id'], false, false);
 	        $done[] = $widget['callback'];
 	
-	        if ( ! isset( $widget['params'][0] ) )
+	        if (!isset($widget['params'][0]))
 	            $widget['params'][0] = array();
 	
-	        $args = array( 'widget_name' => $widget['name'], '_display' => 'template' );
-            
-	        
-	        
-	        if ( isset($wp_registered_widget_controls[$widget['id']]['id_base']) && isset($widget['params'][0]['number']) ) {
+	        $args = array('widget_name' => $widget['name'], '_display' => 'template');
+
+	        if (isset($wp_registered_widget_controls[$widget['id']]['id_base']) && isset($widget['params'][0]['number'])) {
 	            $id_base = $wp_registered_widget_controls[$widget['id']]['id_base'];
-	            #$args['_temp_id'] = "$id_base-__i__";
 	            $args['_multi_num'] = $this->next_widget_id_number($id_base);
 	            $args['_add'] = 'multi';
 	            $args['_base_id'] = $id_base;
@@ -129,7 +121,7 @@ class EletroWidgets {
 	            $args['_multi_num'] = $this->next_widget_id_number($args['widget_id']);
 	        } else {
 	            $args['_add'] = 'single';
-	            if ( $sidebar )
+	            if ($sidebar)
 	                $args['_hide'] = '1';
 	            $args['_base_id'] = $widget['id'];
 	            $args['widget_id'] = $widget['id'];
@@ -137,18 +129,14 @@ class EletroWidgets {
 	        
 	        $selectBox .= "<option value='{$args['_base_id']}' >{$widget['name']}</option>";
 	        
-	        #call_user_func_array( 'wp_widget_control', $args );
             $addControls .= $this->get_widget_on_list($args);
 	    }
 	    
 	    echo "<select id='eletro_widgets_add' name='eletro_widgets_add'>$selectBox</select>";
 	    echo $addControls;
-	    
-	    
 	}
 	
-	function get_widget_on_list($args) {
-		
+	function get_widget_on_list($args) {		
 		$r .= "<div class='widget_add_control' id='widget_add_control_{$args['_base_id']}'>";
 		$r .= "<input type='hidden' class='id_base' name='id_base' value='{$args['_base_id']}'>";
 		$r .= "<input type='hidden' class='multi_number' name='multi_number' value='{$args['_multi_num']}'>";
@@ -157,17 +145,14 @@ class EletroWidgets {
 		
 		$r .= "<input type='button' value='".__('Add', 'eletrow')."' class='eletro_widgets_add_button'>";
 		$r .= '</div>';
-		return $r;
 		
+		return $r;
 	}
     
     #adds the js and css only when we need them
     function addExternalFiles() {
         // only prints the files if logged in
         if (current_user_can('manage_eletro_widgets')) {
-            
-            
-            
             echo '<script type="text/javascript" src="' . EW_URLPATH . 'eletro-widgets.js"></script>';
             echo '<script type="text/javascript" src="' . EW_URLPATH . 'jquery-ui-sortable-1.5.3.js"></script>';
             echo '<script type="text/javascript" src="' . EW_URLPATH . 'jquery.form.js"></script>';
@@ -177,8 +162,7 @@ class EletroWidgets {
 
         #if there is a eletro-widgets.css file in the template folder, use this
         $eletroCSS = file_exists(TEMPLATEPATH . '/eletro-widgets.css') ? get_bloginfo('template_url') . '/eletro-widgets.css' : EW_URLPATH . 'eletro-widgets.css';
-        echo '<link rel="stylesheet" href="'.$eletroCSS.'" type="text/css" media="screen" />';
-        
+        echo '<link rel="stylesheet" href="'.$eletroCSS.'" type="text/css" media="screen" />';        
     }
 }
 
@@ -186,16 +170,10 @@ function print_eletro_widgets($id, $number, $refresh = false) {
     global $wp_registered_widgets, $wp_registered_widget_controls;
 
     require_once(ABSPATH . 'wp-admin/includes/template.php'); 
-    
 
     if ($id) {
-	
-        $className = get_class($wp_registered_widgets[$id]['callback'][0]);
-        
-        #echo $id;
-        
+        $className = get_class($wp_registered_widgets[$id]['callback'][0]);       
         $newWidget = new $className;
-        
         $newWidget->_set($number);
         
         if (current_user_can('manage_eletro_widgets')) {
@@ -221,7 +199,7 @@ function print_eletro_widgets($id, $number, $refresh = false) {
         
         $options = get_option('eletro_widgets');
         
-        if (is_array( $options['widgets'][$id] ) && array_key_exists( $number, $options['widgets'][$id] ) ) {
+        if (is_array($options['widgets'][$id]) && array_key_exists($number, $options['widgets'][$id])) {
             $options = $options['widgets'][$id][$number];
         }
 
@@ -229,31 +207,30 @@ function print_eletro_widgets($id, $number, $refresh = false) {
             echo "<div id='{$newWidget->id}' class='itemDrag' alt='{$newWidget->name}'>";
         }
             
-            echo "<input type='hidden' name='widget-id' value='$id'>";
-            echo "<input type='hidden' name='widget-number' value='$number'>";
-            echo "<input type='hidden' name='action' value='save_widget_options'>";
+        echo "<input type='hidden' name='widget-id' value='$id'>";
+        echo "<input type='hidden' name='widget-number' value='$number'>";
+        echo "<input type='hidden' name='action' value='save_widget_options'>";
+    
+        echo '<div class="eletro_widgets_content">';
+    
+        if (current_user_can('manage_eletro_widgets')) 
+            echo '<h2 class="itemDrag">' . $newWidget->name . '</h2>';
         
-            echo '<div class="eletro_widgets_content">';
-        
-            if (current_user_can('manage_eletro_widgets')) 
-                echo '<h2 class="itemDrag">' . $newWidget->name . '</h2>';
-            
-            $newWidget->widget($params, $options);
+        $newWidget->widget($params, $options);
 
-            echo '</div>';
-                
-            // Control
-            if (current_user_can('manage_eletro_widgets')) {
-                echo "<div class='eletro_widgets_control'>";
-                $newWidget->form($options);
-                echo '<input class="save" name="save" type="button" value="Save">';
-                echo "</div>";
-            }
+        echo '</div>';
+            
+        // Control
+        if (current_user_can('manage_eletro_widgets')) {
+            echo "<div class='eletro_widgets_control'>";
+            $newWidget->form($options);
+            echo '<input class="save" name="save" type="button" value="Save">';
+            echo "</div>";
+        }
                 
         if (!$refresh) { 
             echo "</div>";
-        }
-        
+        }        
     }
 }
     

@@ -34,14 +34,6 @@ jQuery.extend(eletroCanvas.prototype, {
         		jQuery('#' + this_canvas.id).find('#widget_add_control_' + jQuery(this).val()).show();
         	}
         });
-        
-        //ajax form
-        /*
-        jQuery('#eletro_widgets_form_'+this.index).ajaxForm(function() { 
-            //recarregar widget
-            //this_canvas.refreshItem(refreshWidget);
-        });
-        */
     },
     
     save: function() {
@@ -50,12 +42,6 @@ jQuery.extend(eletroCanvas.prototype, {
         var save_este = this;
         
         values = this.getCurrentWidgets();
-        //for (var i=0; i<values.length; i++) {
-        
-        //    if (values[i].constructor.toString().indexOf("Array")) values[i] = values[i].join('X|X');
-        
-        //}
-        //values = values.join('X||X');
         
         debug = jQuery.ajax({
             type: 'POST',
@@ -68,8 +54,7 @@ jQuery.extend(eletroCanvas.prototype, {
                 id: save_este.index
             },
             complete: function() {jQuery("#debug").append(debug.responseText)}
-        });
-    
+        });    
     },
     
     add: function(button) {
@@ -105,8 +90,6 @@ jQuery.extend(eletroCanvas.prototype, {
                     este_add.save();
                 }
             });
-            
-        
     },
     
     getCurrentWidgets: function() {
@@ -121,22 +104,16 @@ jQuery.extend(eletroCanvas.prototype, {
                 var number = jQuery(this).children('input[name=widget-number]').val();
                 var id = jQuery(this).children('input[name=widget-id]').val();
                 
-                //var widget = new Array();
-                //widget.push(id);
-                //widget.push(number);
                 var widget = id + 'X|X' + number;
-                //alert(widget);
             	thisItems.push(widget);
             });            
             values.push(thisItems);
         });
         
-        return values;
-    
+        return values;   
     },
     
     updateControl: function(widget, disable) {
-    //alert(widget);
         var wOption = jQuery('#' + this.id).find('option[value="'+widget+'"]');
         if (disable  ) {
             wOption.attr('disabled', 'disabled');
@@ -165,10 +142,7 @@ jQuery.extend(eletroCanvas.prototype, {
                     new eletroItem(widget, this_reload);
                 }
             });
-    
     }
-    
-
 });
 
 /************** END Canvas ****************/
@@ -215,8 +189,6 @@ jQuery.extend(eletroColumn.prototype, {
      jQuery('#' + canvas.id).find('#'+id).children('.itemDrag').each(function() {
          new eletroItem(this.id, canvas);
      });
-     
-     
    }
 });
 /************** END Column ****************/
@@ -257,13 +229,6 @@ jQuery.extend(eletroItem.prototype, {
         });
         
         jQuery('#' + canvas.id).find('#' + id).find('.save').click(function() {
-        	
-        	//var widget_id = jQuery(this).parents('div.itemDrag').children('.widget-id').val();
-        	//var widget_number = jQuery(this).parents('div.itemDrag').children('.widget-number').val();
-        	//jQuery('#' + canvas.id + ' input[name=eletro_widgetToSave_id]').val(widget_id);
-        	//jQuery('#' + canvas.id + ' input[name=eletro_widgetToSave_number]').val(widget_number);
-        	
-        	
         	var data = jQuery(this).parents('div.itemDrag').find('input').serialize();
         	
         	debug = jQuery.ajax({
@@ -273,27 +238,18 @@ jQuery.extend(eletroItem.prototype, {
                 data: data,
                 complete: function() {jQuery("#debug").append(debug.responseText)}
             });
-        	
-        	
-        	
-        	
         });
-        
         canvas.updateControl(id, true);
-         
     },
     
     remove: function(id, canvas) {
-    
         jQuery('#' + canvas.id).find('#' + id).remove();
         canvas.save();
         canvas.updateControl(id, false);
-    
     }
 
 });
 /************** END Item ****************/
-
 
 jQuery(document).ready(function() {
     // loop through the containers
@@ -301,4 +257,3 @@ jQuery(document).ready(function() {
         new eletroCanvas(jQuery(this).find('#eletro_widgets_id').val());
     });
 });
-

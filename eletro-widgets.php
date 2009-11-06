@@ -7,7 +7,6 @@ Author: HackLab
 Version: 0.2 beta
 
 development version
-
 */
 
 ///// PLUGIN PATH ///////////
@@ -28,8 +27,13 @@ define('EW_URLPATH', WP_CONTENT_URL.'/plugins/'.plugin_basename( dirname(__FILE_
 
 class EletroWidgets {
 
-    var $displayOnlyEletroWidgets = false;
-
+    /**
+     * Output the eletro widgets canvas and its widgets
+     * 
+     * @param int $cols the number of columns for the eletro widget instance
+     * @param int $id a unique identifier for the eletro widget instance
+     * @return void
+     */
     function EletroWidgets($cols = 2, $id = 0) {
         global $wp_registered_widgets;
         
@@ -74,24 +78,33 @@ class EletroWidgets {
         echo "</div>";
     }
     
+    /**
+     * Returns the next avaliable number to be used to create a new widget instance.
+     * 
+     * @param string $id unique string that identifies the widget type (archive, calendar etc) 
+     * @return int $number the next number avaliable to this type of widget
+     */
 	function next_widget_id_number($id) {
 	    $options = get_option('eletro_widgets');
-	    $number = 1;
-        $numbers = array();
+	    $number = 1;;
         
 	    if (is_array($options['widgets'][$id])) {	    	
-	    	foreach($options['widgets'][$id] as $n => $op) {
-	    		$numbers[] = $n;
-	    	}
-	    	$number = max($numbers);
-	    	$number ++;
+	    	$number = max(array_keys($options['widgets'][$id]));
+	    	$number++;
 	    }
 	    
 	    return $number;
 	}
 	
+	/**
+	 * Output a select box with the list of avaliable widgets types
+	 * 
+	 * Based on the function list_widgets() locate on the file wp-admin/includes/widgets.php
+	 * 
+	 * @return void
+	 */
 	function list_widgets() {
-	    global $wp_registered_widgets, $sidebars_widgets, $wp_registered_widget_controls;
+	    global $wp_registered_widgets, $wp_registered_widget_controls;
 	
 	    $sort = $wp_registered_widgets;
 	    usort( $sort, create_function( '$a, $b', 'return strnatcasecmp( $a["name"], $b["name"] );' ) );

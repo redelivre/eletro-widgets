@@ -23,6 +23,27 @@ define('EW_FOLDER', plugin_basename( dirname(__FILE__)) );
 define('EW_ABSPATH', WP_CONTENT_DIR.'/plugins/'.plugin_basename( dirname(__FILE__)).'/' );
 define('EW_URLPATH', WP_CONTENT_URL.'/plugins/'.plugin_basename( dirname(__FILE__)).'/' );
 
+add_action('wp_print_scripts', 'eletrowidgets_print_scripts');
+add_action('wp_print_styles', 'eletrowidgets_print_styles');
+
+function eletrowidgets_print_scripts() {
+    if (current_user_can('manage_eletro_widgets')) {
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('jquery-form');
+        wp_enqueue_script('jquery-ui-sortable');
+        wp_enqueue_script('eletro-widgets', EW_URLPATH . 'eletro-widgets.js');
+    }
+}
+
+function eletrowidgets_print_styles() {
+    if (current_user_can('manage_eletro_widgets')) {
+        wp_enqueue_style('eletro-widgets-admin', EW_URLPATH.'eletro-widgets-admin.css');
+    }
+    
+    $css = file_exists(TEMPLATEPATH . '/eletro-widgets.css') ? get_bloginfo('template_url') . '/eletro-widgets.css' : EW_URLPATH . 'eletro-widgets.css';
+    wp_enqueue_style('eletro-widgets', $css);
+}
+
 ////////////////////////////
 
 class EletroWidgets {
@@ -37,10 +58,10 @@ class EletroWidgets {
     function EletroWidgets($cols = 2, $id = 0) {
         global $wp_registered_widgets;
         
-        if ($id == 0)
-            $this->addExternalFiles();
-        
         echo "<div class='eletro_widgets_separator'></div>";
+        
+        // HACK ALERT :-)
+        echo '<script>var eletro_widgets_ajax_url = "'.EW_URLPATH.'eletro-widgets-ajax.php";</script>';
         
         // print add select box and button
         $selectBox = "<option value='' >".__('Select')."</option>";
@@ -161,22 +182,6 @@ class EletroWidgets {
 		
 		return $r;
 	}
-    
-    #adds the js and css only when we need them
-    function addExternalFiles() {
-        // only prints the files if logged in
-        if (current_user_can('manage_eletro_widgets')) {
-            echo '<script type="text/javascript" src="' . EW_URLPATH . 'eletro-widgets.js"></script>';
-            echo '<script type="text/javascript" src="' . EW_URLPATH . 'jquery-ui-sortable-1.5.3.js"></script>';
-            echo '<script type="text/javascript" src="' . EW_URLPATH . 'jquery.form.js"></script>';
-            echo '<script>var eletro_widgets_ajax_url = "'.EW_URLPATH.'eletro-widgets-ajax.php";</script>';         
-            echo '<link rel="stylesheet" href="'.EW_URLPATH.'eletro-widgets-admin.css" type="text/css" media="screen" />';
-        }
-
-        #if there is a eletro-widgets.css file in the template folder, use this
-        $eletroCSS = file_exists(TEMPLATEPATH . '/eletro-widgets.css') ? get_bloginfo('template_url') . '/eletro-widgets.css' : EW_URLPATH . 'eletro-widgets.css';
-        echo '<link rel="stylesheet" href="'.$eletroCSS.'" type="text/css" media="screen" />';        
-    }
 }
 
 function print_eletro_widgets($id, $number, $refresh = false) {

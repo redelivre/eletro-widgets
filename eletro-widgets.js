@@ -39,7 +39,7 @@ jQuery.extend(eletroCanvas.prototype, {
     save: function() {
         
         //save canvas
-        var save_este = this;
+        var save_this = this;
         
         values = this.getCurrentWidgets();
         
@@ -51,18 +51,17 @@ jQuery.extend(eletroCanvas.prototype, {
             {
                 action: 'save',
                 'value[]': values,
-                id: save_este.index
+                id: save_this.index
             },
             complete: function() {jQuery("#debug").append(debug.responseText)}
         });    
     },
     
     add: function(button) {
-        var este_add = this;
+        var this_add = this;
         var widget_type = button.siblings('.add').val();
         if (widget_type == 'multi') {
         	var number = button.siblings('.multi_number').val();
-        	//var name = button.siblings('.widget-id').val().replace('__i__', number);
         	var name = button.siblings('.widget-id').val();
         	
         	var id_base = button.siblings('.id_base').val();
@@ -85,9 +84,9 @@ jQuery.extend(eletroCanvas.prototype, {
                 },
                 complete: function() 
                 {
-                    jQuery('#' + este_add.id).find('#eletro_widgets_col_0').prepend(widgetContent.responseText);
-                    new eletroItem(newName, este_add);  
-                    este_add.save();
+                    jQuery('#' + this_add.id).find('#eletro_widgets_col_0').prepend(widgetContent.responseText);
+                    new eletroItem(newName, this_add);  
+                    this_add.save();
                 }
             });
     },
@@ -96,7 +95,7 @@ jQuery.extend(eletroCanvas.prototype, {
     
         var col = 0;
         var values = Array();
-        var save_este = this;
+        var save_save_this = this;
         
         jQuery('#' + this.id).find('.recebeDrag').each(function() {
             var thisItems = new Array();
@@ -185,7 +184,7 @@ jQuery.extend(eletroColumn.prototype, {
 			});
      
      
-     //inicia as caixas q existem
+     //initialize all existent canvas
      jQuery('#' + canvas.id).find('#'+id).children('.itemDrag').each(function() {
          new eletroItem(this.id, canvas);
      });
@@ -206,13 +205,11 @@ jQuery.extend(eletroItem.prototype, {
     init: function(id, canvas) {
 
         this.id = id;
-        var este_item = this;
+        var this_item = this;
 
-        //adicionar controles e behaviors
-
+        //add controls and behaviors
         jQuery('#' + canvas.id).find('#' + id).children('.eletro_widgets_control').hide();
         jQuery('#' + canvas.id).find('#' + id).find('h2.itemDrag').append('<a alt="edit" class="edit"></a>').append('<a alt="remove" class="remove"></a>');
-
 
         jQuery('#' + canvas.id).find('#' + id).find('h2 a.edit').click(function() {
             jQuery(this).parents('.eletro_widgets_content').children(':not("h2")').toggle();
@@ -220,11 +217,11 @@ jQuery.extend(eletroItem.prototype, {
         });
 
         jQuery('#' + canvas.id).find('#' + id).find('h2 a.remove').click(function() {
-            este_item.remove(id, canvas);
+            this_item.remove(id, canvas);
         });
         
         jQuery('#' + canvas.id).find('#' + id).find('input.save').click(function() {
-            refreshWidget = este_item.id;
+            refreshWidget = this_item.id;
             canvas.updateControl(id, false);
         });
         

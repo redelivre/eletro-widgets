@@ -61,15 +61,21 @@ jQuery.extend(eletroCanvas.prototype, {
         var this_add = this;
         var widget_type = button.siblings('.add').val();
         if (widget_type == 'multi') {
-        	var number = button.siblings('.multi_number').val();
-        	var name = button.siblings('.widget-id').val();
         	
+            // This is what we are going to post
+            var number = button.siblings('.multi_number').val();
+        	var id = button.siblings('.widget-id').val();
+        	
+            // This is used to know th ID of the new Widget and create the new Instance
         	var id_base = button.siblings('.id_base').val();
         	var newName = id_base + '-' + number;
         	
+            // This increments multi-number value so the next instance will have another number
         	button.siblings('.multi_number').val( parseInt(button.siblings('.multi_number').val()) + 1 );
         } else {
-        	var name = button.siblings('.widget-id').val();
+            // When it is a single widget, all we want is its id
+        	var id = button.siblings('.widget-id').val();
+            var newName = id;
         }
         widgetContent = jQuery.ajax({
                 type: 'POST',
@@ -79,14 +85,14 @@ jQuery.extend(eletroCanvas.prototype, {
                 {
                     action: 'add',
                     number: number,
-                    id_base: id_base, 
-                    name: name
+                    id: id
                 },
                 complete: function() 
                 {
                     jQuery('#' + this_add.id).find('#eletro_widgets_col_0').prepend(widgetContent.responseText);
                     new eletroItem(newName, this_add);  
                     this_add.save();
+                    jQuery('#' + this_add.id).find('#eletro_widgets_add').val('');
                 }
             });
     },
@@ -122,9 +128,11 @@ jQuery.extend(eletroCanvas.prototype, {
 
     },
     
-    refreshItem: function(widget) {
+    refreshItem: function(instanceID) {
     
         var this_reload = this;
+        var widgetID = jQuery('#' + this_reload.id).find('#' + instanceID).children('input[name=widget-id]').val();
+        var widgetNumber = jQuery('#' + this_reload.id).find('#' + instanceID).children('input[name=widget-number]').val();
         widgetContent = jQuery.ajax({
                 type: 'POST',
                 url: eletro_widgets_ajax_url,
@@ -133,12 +141,13 @@ jQuery.extend(eletroCanvas.prototype, {
                 {
                     action: 'add',
                     refresh: 1,
-                    name: widget
+                    id: widgetID,
+                    number: widgetNumber
                 },
                 complete: function() 
                 {
-                    jQuery('#' + this_reload.id).find('#' + widget).html(widgetContent.responseText);
-                    new eletroItem(widget, this_reload);
+                    jQuery('#' + this_reload.id).find('#' + instanceID).html(widgetContent.responseText);
+                    new eletroItem(instanceID, this_reload);
                 }
             });
     }
@@ -220,20 +229,20 @@ jQuery.extend(eletroItem.prototype, {
             this_item.remove(id, canvas);
         });
         
-        jQuery('#' + canvas.id).find('#' + id).find('input.save').click(function() {
-            refreshWidget = this_item.id;
-            canvas.updateControl(id, false);
-        });
-        
         jQuery('#' + canvas.id).find('#' + id).find('.save').click(function() {
-        	var data = jQuery(this).parents('div.itemDrag').find('input').serialize();
+        	
+            canvas.updateControl(id, false);
+            var data = jQuery(this).parents('div.itemDrag').find('input').serialize();
         	
         	debug = jQuery.ajax({
                 type: 'POST',
                 dataType: 'html',
                 url: eletro_widgets_ajax_url,
                 data: data,
-                complete: function() {jQuery("#debug").append(debug.responseText)}
+                complete: function() {
+                    jQuery("#debug").append(debug.responseText);
+                    canvas.refreshItem(id);
+                }
             });
         });
         canvas.updateControl(id, true);

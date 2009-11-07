@@ -68,14 +68,15 @@ class EletroWidgets {
         $done = array();
         
         echo "<div id='eletro_widgets_container_$id' class='eletro_widgets_container'>";
-        echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id' action='/wp284/wp-content/plugins/eletro-widgets/eletro-widgets-ajax.php'>";
-        if (current_user_can('manage_eletro_widgets'))
+        echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id'";
+        if (current_user_can('manage_eletro_widgets')) {
             echo "<div id='eletro_widgets_control'>" . __('Add new Widget: ', 'eletrow');
                     
-        $this->list_widgets();
+            $this->list_widgets();
             
-        echo "</div>";
-        #echo "<input type='button' value='".__('Add', 'eletrow')."' id='eletro_widgets_add_button'></div>";    
+            echo "</div>";
+            
+        }
 
         echo "<input type='hidden' name='eletro_widgets_id' id='eletro_widgets_id' value='$id'>";
         echo "<input type='hidden' name='eletro_widgetToSave_id' value=''>";
@@ -107,13 +108,11 @@ class EletroWidgets {
      */
 	function next_widget_id_number($id) {
 	    $options = get_option('eletro_widgets');
-	    $number = 1;;
-        
-	    if (is_array($options['widgets'][$id])) {	    	
-	    	$number = max(array_keys($options['widgets'][$id]));
+	    $number = 1;
+	    if (isset($options['widgets'][$id]['last_number'])) {	    	
+	    	$number = $options['widgets'][$id]['last_number'];
 	    	$number++;
-	    }
-	    
+	    } 
 	    return $number;
 	}
 	
@@ -190,58 +189,96 @@ function print_eletro_widgets($id, $number, $refresh = false) {
     require_once(ABSPATH . 'wp-admin/includes/template.php'); 
 
     if ($id) {
-        $className = get_class($wp_registered_widgets[$id]['callback'][0]);       
-        $newWidget = new $className;
-        $newWidget->_set($number);
         
+        $widgetName = $wp_registered_widgets[$id]['name'];
+        
+        if (is_array($wp_registered_widgets[$id]['callback'])) {
+			// Multi Widget
+			$className = get_class($wp_registered_widgets[$id]['callback'][0]);
+			$newWidget = new $className;
+			$newWidget->_set($number);
+			$options = get_option('eletro_widgets');
+			if (is_array($options['widgets'][$id]) && array_key_exists($number, $options['widgets'][$id])) {
+				$options = $options['widgets'][$id][$number];
+			}
+			
+			$widgetType = 'multi';
+			$widgetDivID = $newWidget->id;
+			
+		} else {
+			// Single Widget
+			
+			$callback = $wp_registered_widgets[$id]['callback'];
+			$callbackControl = $wp_registered_widget_controls[$id]['callback'];
+			
+			$widgetType = 'single';
+			$widgetDivID = $id;
+			
+		}
+
         if (current_user_can('manage_eletro_widgets')) {
-            $params = array(array(
-                'name' => $newWidget->name,
-                'id' => $newWidget->id,
+            $params = array(
+                'name' => $widgetName,
+                'id' => $id,
                 'before_widget' => '',
                 'after_widget' => '',
                 'before_title' => '<b style="display: none;">',
                 'after_title' => '</b>',
                 
-            ));
+            );
         } else {
-            $params = array(array(
-                'name' => $newWidget->name,
-                'id' => $newWidget->id,
+            $params = array(
+                'name' => $widgetName,
+                'id' => $id,
                 'before_widget' => '',
                 'after_widget' => '',
                 'before_title' => '<h2>',
                 'after_title' => '</h2>',
-            ));
-        }
-        
-        $options = get_option('eletro_widgets');
-        
-        if (is_array($options['widgets'][$id]) && array_key_exists($number, $options['widgets'][$id])) {
-            $options = $options['widgets'][$id][$number];
+            );
         }
 
+        // This is weird, but is needed
+        if ($widgetType == 'single')
+            $params = array($params);
+
         if (!$refresh) { 
-            echo "<div id='{$newWidget->id}' class='itemDrag' alt='{$newWidget->name}'>";
+            echo "<div id='{$widgetDivID}' class='itemDrag' alt='{$widgetName}'>";
         }
             
         echo "<input type='hidden' name='widget-id' value='$id'>";
         echo "<input type='hidden' name='widget-number' value='$number'>";
+        echo "<input type='hidden' name='widget-type' value='$widgetType'>";
         echo "<input type='hidden' name='action' value='save_widget_options'>";
     
         echo '<div class="eletro_widgets_content">';
     
         if (current_user_can('manage_eletro_widgets')) 
-            echo '<h2 class="itemDrag">' . $newWidget->name . '</h2>';
+            echo '<h2 class="itemDrag">' . $widgetName . '</h2>';
         
-        $newWidget->widget($params, $options);
+        // Print Widget
+        if ($widgetType == 'multi') {
+			$newWidget->widget($params, $options);
+		} else {
+			if ( is_callable($callback) ) 
+                call_user_func_array($callback, $params);
+		}
 
         echo '</div>';
             
         // Control
         if (current_user_can('manage_eletro_widgets')) {
             echo "<div class='eletro_widgets_control'>";
-            $newWidget->form($options);
+            
+            if ($widgetType == 'multi') {
+            	$newWidget->form($options);
+            } else {
+				if ( is_callable($callbackControl) ) {
+                    call_user_func_array($callbackControl, '');                
+                } else {
+                     _e('There are no options for this widget.');
+                }
+			}
+			
             echo '<input class="save" name="save" type="button" value="Save">';
             echo "</div>";
         }

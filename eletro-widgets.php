@@ -4,22 +4,13 @@ Plugin Name: Eletro Widgets
 Plugin URI: 
 Description: Allows you to use the power and flexibility of the WordPress Widgets to set up a dynamic area anywhere in your site and manage multiple columns of widgets, dragging and dropping them around
 Author: HackLab
-Version: 0.2 beta
+Version: 1.0
 
-development version
+
 */
 
 ///// PLUGIN PATH ///////////
 
-$myabspath = str_replace("\\","/",ABSPATH);  
-define('WINABSPATH', $myabspath);
-// Pre-2.6 compatibility
-if ( !defined('WP_CONTENT_URL') )
-	define( 'WP_CONTENT_URL', get_option('siteurl') . '/wp-content');
-if ( !defined('WP_CONTENT_DIR') )
-	define( 'WP_CONTENT_DIR', WINABSPATH . 'wp-content' );
-	
-define('EW_FOLDER', plugin_basename( dirname(__FILE__)) );
 define('EW_ABSPATH', WP_CONTENT_DIR.'/plugins/'.plugin_basename( dirname(__FILE__)).'/' );
 define('EW_URLPATH', WP_CONTENT_URL.'/plugins/'.plugin_basename( dirname(__FILE__)).'/' );
 
@@ -27,15 +18,25 @@ add_action('wp_print_scripts', 'eletrowidgets_print_scripts');
 add_action('wp_print_styles', 'eletrowidgets_print_styles');
 
 function eletrowidgets_print_scripts() {
+    
+    // Since we only need JS when admin is logged in, its ok to add it everywhere
     if (current_user_can('manage_eletro_widgets')) {
         wp_enqueue_script('jquery');
-        wp_enqueue_script('jquery-form');
         wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_script('eletro-widgets', EW_URLPATH . 'eletro-widgets.js');
+        $messages = array(
+            'ajaxurl' => EW_URLPATH.'eletro-widgets-ajax.php',
+            'confirmClear' => 'Are you sure you want to clear all widgets and its settings from this canvas?',
+            'confirmApply' => 'Are you sure you want to apply this configuration to the public view of this canvas?',
+            'confirmRestore' => 'Are you sure you want to copy the settings from the public view and loose any changes you have made?'
+        );
+        wp_localize_script('eletro-widgets', 'eletro', $messages);
     }
+
 }
 
 function eletrowidgets_print_styles() {
+    
     if (current_user_can('manage_eletro_widgets')) {
         wp_enqueue_style('eletro-widgets-admin', EW_URLPATH.'eletro-widgets-admin.css');
     }
@@ -48,56 +49,68 @@ function eletrowidgets_print_styles() {
 
 class EletroWidgets {
 
+    function EletroWidgets($cols = 2, $id = 0, $onlyEletro = false) {
+
+        $this->id = $id;
+        $this->cols = $cols;
+        $this->onlyEletro = $onlyEletro;
+        $this->outputCanvas();
+
+    }
+    
     /**
      * Output the eletro widgets canvas and its widgets
      * 
-     * @param int $cols the number of columns for the eletro widget instance
-     * @param int $id a unique identifier for the eletro widget instance
      * @return void
      */
-    function EletroWidgets($cols = 2, $id = 0) {
-        global $wp_registered_widgets;
+    function outputCanvas() {
         
         echo "<div class='eletro_widgets_separator'></div>";
         
-        // HACK ALERT :-)
-        echo '<script>var eletro_widgets_ajax_url = "'.EW_URLPATH.'eletro-widgets-ajax.php";</script>';
+        // The main DIV for this canvas
+        echo "<div id='eletro_widgets_container_{$this->id}' class='eletro_widgets_container'>";
         
-        // print add select box and button
-        $selectBox = "<option value='' >".__('Select')."</option>";
-        $done = array();
+        echo "<form name='eletro_widgets_form_{$this->id}' id='eletro_widgets_form_{$this->id}'";
         
-        echo "<div id='eletro_widgets_container_$id' class='eletro_widgets_container'>";
-        echo "<form name='eletro_widgets_form_$id' method='post' id='eletro_widgets_form_$id'";
+        // If admin, print the control
         if (current_user_can('manage_eletro_widgets')) {
             echo "<div id='eletro_widgets_control'>" . __('Add new Widget: ', 'eletrow');
                     
             $this->list_widgets();
             
-            echo "</div>";
+            echo '<a class="eletroClearAll">' . __('Clear all widgets', 'eletroWidgets') . '</a>';
+            echo '<a class="eletroApply">' . __('Apply to public', 'eletroWidgets') . '</a>';
+            echo '<a class="eletroRestore">' . __('Restore from public', 'eletroWidgets') . '</a>';
             
+            echo "</div>";
         }
 
-        echo "<input type='hidden' name='eletro_widgets_id' id='eletro_widgets_id' value='$id'>";
-        echo "<input type='hidden' name='eletro_widgetToSave_id' value=''>";
-        echo "<input type='hidden' name='eletro_widgetToSave_number' value=''>";
-        echo "<input type='hidden' name='action' value='save_widget_options'>";
+        // Put the canvas ID in a hidden field
+        echo "<input type='hidden' name='eletro_widgets_id' id='eletro_widgets_id' value='{$this->id}'>";
         
-        $options = get_option('eletro_widgets');
-        $options = $options['canvas'];
-        $colunas = $options[$id]; // load saved widgets
+        // Get saved widgets and print them
+        if (current_user_can('manage_eletro_widgets')) {
+            $options = get_option('eletro_widgets');
+        } else {
+            $options = get_option('eletro_widgets_public');
+        }
+        
+        $colunas = $options[$this->id]['widgets'];
 
-        for ($i=0; $i<$cols; $i++) {
-            echo "<div class='recebeDrag' id='eletro_widgets_col_$i'>";
+        for ($i = 0; $i < $this->cols; $i ++) {
+            echo "<div class='eletro_widgets_col' id='eletro_widgets_col_$i'>";
             if (is_array($colunas[$i])) {
                 foreach ($colunas[$i] as $w) {
-                    print_eletro_widgets($w['id'], $w['number']);
+                    print_eletro_widgets($w['id'], $w['number'], $this->id);
                 }
             }
             echo "</div>";
         }
+        
+        // closes the form and the canvas div
         echo "</form>";
         echo "</div>";
+    
     }
     
     /**
@@ -109,8 +122,8 @@ class EletroWidgets {
 	function next_widget_id_number($id) {
 	    $options = get_option('eletro_widgets');
 	    $number = 1;
-	    if (isset($options['widgets'][$id]['last_number'])) {	    	
-	    	$number = $options['widgets'][$id]['last_number'];
+	    if (isset($options[$this->id]['widgets_options'][$id]['last_number'])) {	    	
+	    	$number = $options[$this->id]['widgets_options'][$id]['last_number'];
 	    	$number++;
 	    } 
 	    return $number;
@@ -136,6 +149,9 @@ class EletroWidgets {
 	    foreach ($sort as $widget) {
 	        if (in_array($widget['callback'], $done, true)) // We already showed this multi-widget
 	            continue;
+            
+            if ($this->onlyEletro && ( !isset($widget['eletroWidget'] ) ) ) // Check for only eletro widgets option
+                continue; 
 	
 	        $sidebar = is_active_widget($widget['callback'], $widget['id'], false, false);
 	        $done[] = $widget['callback'];
@@ -169,7 +185,7 @@ class EletroWidgets {
 	    echo $addControls;
 	}
 	
-	function get_widget_on_list($args) {		
+	function get_widget_on_list($args) {
 		$r .= "<div class='widget_add_control' id='widget_add_control_{$args['_base_id']}'>";
 		$r .= "<input type='hidden' class='id_base' name='id_base' value='{$args['_base_id']}'>";
 		$r .= "<input type='hidden' class='multi_number' name='multi_number' value='{$args['_multi_num']}'>";
@@ -183,13 +199,10 @@ class EletroWidgets {
 	}
 }
 
-function print_eletro_widgets($id, $number, $refresh = false) {
+function print_eletro_widgets($id, $number, $canvas_id, $refresh = false) {
     global $wp_registered_widgets, $wp_registered_widget_controls;
 
-    require_once(ABSPATH . 'wp-admin/includes/template.php'); 
-
     if ($id) {
-        
         $widgetName = $wp_registered_widgets[$id]['name'];
         
         if (is_array($wp_registered_widgets[$id]['callback'])) {
@@ -197,23 +210,25 @@ function print_eletro_widgets($id, $number, $refresh = false) {
 			$className = get_class($wp_registered_widgets[$id]['callback'][0]);
 			$newWidget = new $className;
 			$newWidget->_set($number);
-			$options = get_option('eletro_widgets');
-			if (is_array($options['widgets'][$id]) && array_key_exists($number, $options['widgets'][$id])) {
-				$options = $options['widgets'][$id][$number];
+            
+			if (current_user_can('manage_eletro_widgets')) {
+                $options = get_option('eletro_widgets');
+            } else {
+                $options = get_option('eletro_widgets_public');
+            }
+            
+			if (is_array($options[$canvas_id]['widgets_options'][$id]) && array_key_exists($number, $options[$canvas_id]['widgets_options'][$id])) {
+				$options = $options[$canvas_id]['widgets_options'][$id][$number];
 			}
-			
 			$widgetType = 'multi';
 			$widgetDivID = $newWidget->id;
 			
 		} else {
 			// Single Widget
-			
 			$callback = $wp_registered_widgets[$id]['callback'];
 			$callbackControl = $wp_registered_widget_controls[$id]['callback'];
-			
 			$widgetType = 'single';
 			$widgetDivID = $id;
-			
 		}
 
         if (current_user_can('manage_eletro_widgets')) {
@@ -224,7 +239,6 @@ function print_eletro_widgets($id, $number, $refresh = false) {
                 'after_widget' => '',
                 'before_title' => '<b style="display: none;">',
                 'after_title' => '</b>',
-                
             );
         } else {
             $params = array(
@@ -248,6 +262,7 @@ function print_eletro_widgets($id, $number, $refresh = false) {
         echo "<input type='hidden' name='widget-id' value='$id'>";
         echo "<input type='hidden' name='widget-number' value='$number'>";
         echo "<input type='hidden' name='widget-type' value='$widgetType'>";
+        echo "<input type='hidden' name='canvas-id' value='$canvas_id'>";
         echo "<input type='hidden' name='action' value='save_widget_options'>";
     
         echo '<div class="eletro_widgets_content">';
@@ -267,6 +282,10 @@ function print_eletro_widgets($id, $number, $refresh = false) {
             
         // Control
         if (current_user_can('manage_eletro_widgets')) {
+            
+            // load this files that have some functions (such as checked()) used by some widget controls
+            require_once(ABSPATH . 'wp-admin/includes/template.php'); 
+            
             echo "<div class='eletro_widgets_control'>";
             
             if ($widgetType == 'multi') {
@@ -289,9 +308,8 @@ function print_eletro_widgets($id, $number, $refresh = false) {
     }
 }
     
-function defineAsEletroWidget($widgetName) {
+function defineAsEletroWidget($widgetId) {
     global $wp_registered_widgets;
-    $widgetId = sanitize_title($widgetName);
     $wp_registered_widgets[$widgetId]['eletroWidget'] = true;   
 }
 
@@ -300,15 +318,19 @@ function eletroWidgetsInstall() {
     $role->add_cap('manage_eletro_widgets');
     $options = array();
     update_option('eletro_widgets', $options);
+    update_option('eletro_widgets_public', $options);
 }
 
 function eletroWidgetsUninstall() {
     $role = get_role('administrator');
     $role->remove_cap('manage_eletro_widgets');
     remove_option('eletro_widgets');
+    remove_option('eletro_widgets_public');
 }
 
 register_activation_hook( __FILE__, 'eletroWidgetsInstall' );
 register_deactivation_hook( __FILE__, 'eletroWidgetsInstall' );
+
+
 
 ?>

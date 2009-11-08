@@ -1,6 +1,3 @@
-
-var refreshWidget;
-
 /************** ClassCanvas ****************/
 eletroCanvas = function(id) {
   this.init(id);
@@ -16,83 +13,135 @@ jQuery.extend(eletroCanvas.prototype, {
         this.id = 'eletro_widgets_container_' + id;
         this.index = id;
         this.columns = new Array()
-        var this_canvas = this;
+        var th = this;
         
-        jQuery('#' + this.id).find('.recebeDrag').each(function() {
-            this_canvas.columns.push(new eletroColumn(this.id, this_canvas));
+        // initialize each column
+        jQuery('#' + this.id).find('.eletro_widgets_col').each(function() {
+            th.columns.push(new eletroColumn(this.id, th));
         });
         
-        //behavior do botao add
+        //add button behavior
         jQuery('#' + this.id).find('.eletro_widgets_add_button').click(function() {
-            this_canvas.add(jQuery(this));
+            th.add(jQuery(this));
         });
         
         // select behaviour 
         jQuery('#' + this.id).find('#eletro_widgets_add').change(function() {
-        	jQuery('#' + this_canvas.id).find('.widget_add_control').hide();
+        	jQuery('#' + th.id).find('.widget_add_control').hide();
         	if (jQuery(this).val()) {
-        		jQuery('#' + this_canvas.id).find('#widget_add_control_' + jQuery(this).val()).show();
+        		jQuery('#' + th.id).find('#widget_add_control_' + jQuery(this).val()).show();
         	}
         });
+        
+        //eletroClearAll behavior
+        jQuery('#' + this.id).find('.eletroClearAll').click(function() {
+            if (confirm(eletro.confirmClear)) {
+                jQuery('#' + th.id + ' .eletro_widgets_col').each(function() {
+                    jQuery(this).html('');
+                });
+                th.save();
+            }
+        });
+        
+        //Apply to public behavior
+        jQuery('#' + this.id).find('.eletroApply').click(function() {
+            if (confirm(eletro.confirmApply)) {
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: 'html',
+                    url: eletro.ajaxurl,
+                     data: 
+                    {
+                        action: 'apply',
+                        canvas_id: th.index
+                    },
+                    complete: function() {
+                        alert('listo');
+                    }
+                });
+            }
+        });
+        
+        //Restore from public behavior
+        jQuery('#' + this.id).find('.eletroRestore').click(function() {
+            if (confirm(eletro.confirmRestore)) {
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: 'html',
+                    url: eletro.ajaxurl,
+                     data: 
+                    {
+                        action: 'restore',
+                        canvas_id: th.index
+                    },
+                    complete: function() {
+                        location.reload();
+                    }
+                });
+            }
+        });
+        
     },
     
     save: function() {
         
         //save canvas
-        var save_this = this;
+        var th = this;
         
         values = this.getCurrentWidgets();
         
         debug = jQuery.ajax({
             type: 'POST',
             dataType: 'html',
-            url: eletro_widgets_ajax_url,
+            url: eletro.ajaxurl,
              data: 
             {
                 action: 'save',
                 'value[]': values,
-                id: save_this.index
+                id: th.index
             },
             complete: function() {jQuery("#debug").append(debug.responseText)}
         });    
     },
     
     add: function(button) {
-        var this_add = this;
+        var th = this;
         var widget_type = button.siblings('.add').val();
         if (widget_type == 'multi') {
         	
             // This is what we are going to post
-            var number = button.siblings('.multi_number').val();
-        	var id = button.siblings('.widget-id').val();
+            var widget_number = button.siblings('.multi_number').val();
+        	var widget_id = button.siblings('.widget-id').val();
         	
-            // This is used to know th ID of the new Widget and create the new Instance
+            // This is used to know the ID of the new Widget div and create the new Instance
         	var id_base = button.siblings('.id_base').val();
-        	var newName = id_base + '-' + number;
+        	var newName = id_base + '-' + widget_number;
         	
             // This increments multi-number value so the next instance will have another number
         	button.siblings('.multi_number').val( parseInt(button.siblings('.multi_number').val()) + 1 );
         } else {
             // When it is a single widget, all we want is its id
-        	var id = button.siblings('.widget-id').val();
-            var newName = id;
+        	var widget_id = button.siblings('.widget-id').val();
+            var newName = widget_id;
         }
         widgetContent = jQuery.ajax({
                 type: 'POST',
-                url: eletro_widgets_ajax_url,
+                url: eletro.ajaxurl,
                 dataType: 'html',
                 data: 
                 {
                     action: 'add',
-                    number: number,
-                    id: id
+                    widget_number: widget_number,
+                    canvas_id: th.index,
+                    widget_id: widget_id
                 },
                 complete: function() 
                 {
-                    jQuery('#' + this_add.id).find('#eletro_widgets_col_0').prepend(widgetContent.responseText);
-                    new eletroItem(newName, this_add);  
-                    this_add.save();
-                    jQuery('#' + this_add.id).find('#eletro_widgets_add').val('');
+                    jQuery('#' + th.id).find('#eletro_widgets_col_0').prepend(widgetContent.responseText);
+                    new eletroItem(newName, th);  
+                    th.save();
+                    jQuery('#' + th.id).find('#eletro_widgets_add').val('');
+                    jQuery('#' + th.id).find('.widget_add_control').hide();
                 }
             });
     },
@@ -101,14 +150,12 @@ jQuery.extend(eletroCanvas.prototype, {
     
         var col = 0;
         var values = Array();
-        var save_save_this = this;
         
-        jQuery('#' + this.id).find('.recebeDrag').each(function() {
+        jQuery('#' + this.id).find('.eletro_widgets_col').each(function() {
             var thisItems = new Array();
             jQuery(this).find('div.itemDrag:not(".ui-sortable-helper")').each(function() {
                 var number = jQuery(this).children('input[name=widget-number]').val();
                 var id = jQuery(this).children('input[name=widget-id]').val();
-                
                 var widget = id + 'X|X' + number;
             	thisItems.push(widget);
             });            
@@ -125,29 +172,29 @@ jQuery.extend(eletroCanvas.prototype, {
         } else {
             wOption.removeAttr('disabled');
         }
-
     },
     
     refreshItem: function(instanceID) {
     
-        var this_reload = this;
-        var widgetID = jQuery('#' + this_reload.id).find('#' + instanceID).children('input[name=widget-id]').val();
-        var widgetNumber = jQuery('#' + this_reload.id).find('#' + instanceID).children('input[name=widget-number]').val();
+        var th = this;
+        var widgetID = jQuery('#' + th.id).find('#' + instanceID).children('input[name=widget-id]').val();
+        var widgetNumber = jQuery('#' + th.id).find('#' + instanceID).children('input[name=widget-number]').val();
         widgetContent = jQuery.ajax({
                 type: 'POST',
-                url: eletro_widgets_ajax_url,
+                url: eletro.ajaxurl,
                 dataType: 'html',
                 data: 
                 {
                     action: 'add',
                     refresh: 1,
-                    id: widgetID,
-                    number: widgetNumber
+                    widget_id: widgetID,
+                    widget_number: widgetNumber,
+                    canvas_id: th.index
                 },
                 complete: function() 
                 {
-                    jQuery('#' + this_reload.id).find('#' + instanceID).html(widgetContent.responseText);
-                    new eletroItem(instanceID, this_reload);
+                    jQuery('#' + th.id).find('#' + instanceID).html(widgetContent.responseText);
+                    new eletroItem(instanceID, th);
                 }
             });
     }
@@ -161,15 +208,13 @@ eletroColumn = function(id, canvas) {
 }
 
 jQuery.extend(eletroColumn.prototype, {
-   // object variables
    id: '',
    items: new Array(),
 
    init: function(id, canvas) {
-     // do initialization here
      this.id = id;
      
-     //inicia o sortable
+     //initialize sortable
      jQuery('#' + canvas.id).find('#'+id).sortable(
 			{
 				accept			: 'itemDrag',
@@ -178,7 +223,7 @@ jQuery.extend(eletroColumn.prototype, {
 				hoverclass 		: 'dragHover',
 				handle			: 'h2.itemDrag',
 				opacity			: 0.7,
-				connectWith     : ['#' + canvas.id + ' .recebeDrag'],
+				connectWith     : ['#' + canvas.id + ' .eletro_widgets_col'],
 				update 		    : function() {
                       canvas.save();          
                 },
@@ -193,7 +238,7 @@ jQuery.extend(eletroColumn.prototype, {
 			});
      
      
-     //initialize all existent canvas
+     //initialize all existent items
      jQuery('#' + canvas.id).find('#'+id).children('.itemDrag').each(function() {
          new eletroItem(this.id, canvas);
      });
@@ -207,14 +252,13 @@ eletroItem = function(id, canvas) {
 }
 
 jQuery.extend(eletroItem.prototype, {
-   // object variables
    id: '',
    container: '',
 
     init: function(id, canvas) {
 
         this.id = id;
-        var this_item = this;
+        var th = this;
 
         //add controls and behaviors
         jQuery('#' + canvas.id).find('#' + id).children('.eletro_widgets_control').hide();
@@ -226,18 +270,19 @@ jQuery.extend(eletroItem.prototype, {
         });
 
         jQuery('#' + canvas.id).find('#' + id).find('h2 a.remove').click(function() {
-            this_item.remove(id, canvas);
+            th.remove(id, canvas);
         });
         
         jQuery('#' + canvas.id).find('#' + id).find('.save').click(function() {
         	
             canvas.updateControl(id, false);
+            
             var data = jQuery(this).parents('div.itemDrag').find('input').serialize();
         	
         	debug = jQuery.ajax({
                 type: 'POST',
                 dataType: 'html',
-                url: eletro_widgets_ajax_url,
+                url: eletro.ajaxurl,
                 data: data,
                 complete: function() {
                     jQuery("#debug").append(debug.responseText);

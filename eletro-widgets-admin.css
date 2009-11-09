@@ -1,12 +1,49 @@
+/*=ELETRO WIDGETS CONTROL BAR
+ -----------------------------------------------------*/
+#eletro_widgets_control {
+    background: #f0f0f0;
+    color: black;
+    margin: 0 0 9px 0;
+    padding: 9px 1px 9px 9px;
+}
+
+#eletro_widgets_control .eletro_list_widgets {
+    float: left;
+}
+
+#eletro_widgets_control .widget_add_control {
+    display:none;
+    float: right; 
+}
+
+#eletro_widgets_control .eletro_widgets_buttons {
+    float: left; 
+}
+
+#eletro_widgets_control .eletro_widgets_buttons a {
+    background: #ccc;
+    cursor: pointer;
+    display: block;
+    float:left; 
+    margin: 1px; 
+    padding: 3px 9px;
+    text-decoration: none;
+}
+
+#eletro_widgets_control .eletro_widgets_buttons a:hover {
+    background: #333;
+    color: white;
+}
+
 div.itemDrag {
 	/* border: 1px solid #ccc; */
 }
 
-div.itemDrag h2.itemDrag {
+div.itemDrag span.itemDrag {
 	cursor: move;
 }
 
-div.itemDrag h2.itemDrag a {
+div.itemDrag span.itemDrag a {
     cursor: pointer;
     font-size: 0.7em;
     position: absolute;
@@ -17,21 +54,21 @@ div.eletro_widgets_col {
 	border: 1px dashed #ccc;
 }
 
-div.itemDrag h2.itemDrag a.edit {
+div.itemDrag span.itemDrag a.edit {
     right: 28px;
     background-image: url("img/application_edit.png");
     height:16px;
     width: 16px;
 }
 
-div.itemDrag h2.itemDrag a.remove {
+div.itemDrag span.itemDrag a.remove {
     right: 5px;
     background-image: url("img/application_delete.png");
     height:16px;
     width: 16px;
 }
 
-div.itemDrag h2.itemDrag a:hover {
+div.itemDrag span.itemDrag a:hover {
     text-decoration: underline;
 }
 
@@ -39,6 +76,8 @@ div.itemDrag h2.itemDrag a:hover {
 	border: 3px dashed #0066cc;	
 }
 
-.widget_add_control {
-    display:none;
+
+.eletro_widgets_content {
+    margin: 0 0 18px 0;
+    padding: 0 9px;
 }

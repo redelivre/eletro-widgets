@@ -9,17 +9,20 @@
     overflow: hidden;
 }
 
-h2.itemDrag {
-	background-color: #ff3300;
-	color: #fff;
-	padding: 3px;
+span.itemDrag {
+	background-color: #f0f0f0;
+	color: #333;
+	display: block;
+	font-weight: bold;
+	padding: 3px 9px;
 	position: relative;
-	margin-top: 0px;
+    margin: 0 0 18px 0;
 }
 
 div.eletro_widgets_col {
-    min-height: 50px;
     float: left;
+    margin: 0 5px;
+    min-height: 50px;    
 }
 
 
@@ -35,7 +38,7 @@ div.eletro_widgets_col {
 }
 
 #eletro_widgets_container_0 div.itemDrag {
-	width: 90%;
+	width: 100%;
 }
 /* Fim dos estilos para o container 0 */
 /* End of styles for container 0 */

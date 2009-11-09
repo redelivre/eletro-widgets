@@ -221,7 +221,7 @@ jQuery.extend(eletroColumn.prototype, {
 				placeholder		: 'dragAjuda',
 				activeclass 	: 'dragAtivo',
 				hoverclass 		: 'dragHover',
-				handle			: 'h2.itemDrag',
+				handle			: 'span.itemDrag',
 				opacity			: 0.7,
 				connectWith     : ['#' + canvas.id + ' .eletro_widgets_col'],
 				update 		    : function() {
@@ -262,14 +262,14 @@ jQuery.extend(eletroItem.prototype, {
 
         //add controls and behaviors
         jQuery('#' + canvas.id).find('#' + id).children('.eletro_widgets_control').hide();
-        jQuery('#' + canvas.id).find('#' + id).find('h2.itemDrag').append('<a alt="edit" class="edit"></a>').append('<a alt="remove" class="remove"></a>');
+        jQuery('#' + canvas.id).find('#' + id).find('span.itemDrag').append('<a alt="edit" class="edit"></a>').append('<a alt="remove" class="remove"></a>');
 
-        jQuery('#' + canvas.id).find('#' + id).find('h2 a.edit').click(function() {
-            jQuery(this).parents('.eletro_widgets_content').children(':not("h2")').toggle();
+        jQuery('#' + canvas.id).find('#' + id).find('span.itemDrag a.edit').click(function() {
+            jQuery(this).parents('.eletro_widgets_content').children(':not("span.itemDrag")').toggle();
             jQuery(this).parents('.eletro_widgets_content').siblings('.eletro_widgets_control').toggle();                    
         });
 
-        jQuery('#' + canvas.id).find('#' + id).find('h2 a.remove').click(function() {
+        jQuery('#' + canvas.id).find('#' + id).find('span.itemDrag a.remove').click(function() {
             th.remove(id, canvas);
         });
         

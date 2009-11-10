@@ -4,7 +4,7 @@
     background: #f0f0f0;
     color: black;
     margin: 0 0 9px 0;
-    padding: 9px 1px 9px 9px;
+    padding: 9px;
 }
 
 #eletro_widgets_control .eletro_list_widgets {
@@ -16,8 +16,12 @@
     float: right; 
 }
 
+#eletro_widgets_control .eletro_list_widgets {
+    padding: 3px 0;
+}
+
 #eletro_widgets_control .eletro_widgets_buttons {
-    float: left; 
+    float: right; 
 }
 
 #eletro_widgets_control .eletro_widgets_buttons a {
@@ -34,6 +38,8 @@
     background: #333;
     color: white;
 }
+/*=END Eletro Widgets Control Bar
+ -----------------------------------------------------*/
 
 div.itemDrag {
 	/* border: 1px solid #ccc; */

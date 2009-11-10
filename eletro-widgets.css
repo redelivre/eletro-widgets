@@ -20,6 +20,7 @@ span.itemDrag {
 }
 
 div.eletro_widgets_col {
+    border: none;
     float: left;
     margin: 0 5px;
     min-height: 50px;    

@@ -9,11 +9,11 @@ switch ($_POST['action']) {
         $id = $_POST['widget-id'];
         $number = $_POST['widget-number'];
         $canvas_id = $_POST['canvas-id'];
+        $id_base = $_POST['id_base'];
         
-        $id_base = preg_replace('/(-2)$/', '', $id);
         $option_name = 'widget-'.$id_base;
         
-        if (is_array($wp_registered_widgets[$id]['callback'])) {
+        if ( class_exists($id) ) {
         // Saving Multi Widgets
             $newOptions = $_POST[$option_name][$number];
             $options = get_option('eletro_widgets');
@@ -24,8 +24,7 @@ switch ($_POST['action']) {
                 $oldOptions = array();
             }
             
-            $className = get_class($wp_registered_widgets[$id]['callback'][0]);
-            $newWidget = new $className;
+            $newWidget = new $id;
             $newWidget->_set($number);
             $newOptions = $newWidget->update($newOptions, $oldOptions);
             
@@ -49,6 +48,7 @@ switch ($_POST['action']) {
     case 'add':
     
     	$widget_id = $_POST['widget_id'];
+        $id_base = $_POST['id_base'];
         $refresh = $_POST['refresh'] ? true : false;
         $widget_number = $_POST['widget_number'];
         $canvas_id = $_POST['canvas_id'];
@@ -62,7 +62,7 @@ switch ($_POST['action']) {
             }
             update_option('eletro_widgets', $options);
         }
-        print_eletro_widgets($widget_id, $widget_number, $canvas_id, $refresh);
+        print_eletro_widgets($widget_id, $widget_number, $id_base, $canvas_id, $refresh);
         break;
         
     case 'save':
@@ -82,6 +82,7 @@ switch ($_POST['action']) {
                    	$w = explode('X|X', $widget);
                    	$options[$col][$i]['id'] = $w[0];
                    	$options[$col][$i]['number'] = $w[1];
+                    $options[$col][$i]['id_base'] = $w[2];
                  	$i ++;
                 }
             }

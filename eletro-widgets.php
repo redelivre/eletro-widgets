@@ -107,7 +107,7 @@ class EletroWidgets {
             echo "<div class='eletro_widgets_col' id='eletro_widgets_col_$i'>";
             if (is_array($colunas[$i])) {
                 foreach ($colunas[$i] as $w) {
-                    print_eletro_widgets($w['id'], $w['number'], $this->id);
+                    print_eletro_widgets($w['id'], $w['number'], $w['id_base'], $this->id);
                 }
             }
             echo "</div>";
@@ -170,19 +170,19 @@ class EletroWidgets {
 	        if (isset($wp_registered_widget_controls[$widget['id']]['id_base']) && isset($widget['params'][0]['number'])) {
 	            $id_base = $wp_registered_widget_controls[$widget['id']]['id_base'];
 	            $args['_multi_num'] = $this->next_widget_id_number($id_base);
-	            $args['_add'] = 'multi';
-	            $args['_base_id'] = $id_base;
-	            $args['widget_id'] = $id_base . '-2';
+                $args['_add'] = 'multi';
+	            $args['_id_base'] = $id_base;
+	            $args['widget_id'] = get_class($widget['callback'][0]);
 	            $args['_multi_num'] = $this->next_widget_id_number($args['widget_id']);
 	        } else {
 	            $args['_add'] = 'single';
 	            if ($sidebar)
 	                $args['_hide'] = '1';
-	            $args['_base_id'] = $widget['id'];
+	            $args['_id_base'] = $widget['id'];
 	            $args['widget_id'] = $widget['id'];
 	        }
 
-	        $selectBox .= "<option value='{$args['_base_id']}' >{$widget['name']}</option>";
+	        $selectBox .= "<option value='{$args['_id_base']}' >{$widget['name']}</option>";
 
             $addControls .= $this->get_widget_on_list($args);
 	    }
@@ -192,8 +192,8 @@ class EletroWidgets {
 	}
 
 	function get_widget_on_list($args) {
-		$r .= "<div class='widget_add_control' id='widget_add_control_{$args['_base_id']}'>";
-		$r .= "<input type='hidden' class='id_base' name='id_base' value='{$args['_base_id']}'>";
+		$r .= "<div class='widget_add_control' id='widget_add_control_{$args['_id_base']}'>";
+		$r .= "<input type='hidden' class='id_base' name='id_base' value='{$args['_id_base']}'>";
 		$r .= "<input type='hidden' class='multi_number' name='multi_number' value='{$args['_multi_num']}'>";
 		$r .= "<input type='hidden' class='widget-id' name='widget-id' value='{$args['widget_id']}'>";
 		$r .= "<input type='hidden' class='add' name='add' value='{$args['_add']}'>";
@@ -205,16 +205,16 @@ class EletroWidgets {
 	}
 }
 
-function print_eletro_widgets($id, $number, $canvas_id, $refresh = false) {
-    global $wp_registered_widgets, $wp_registered_widget_controls;
+function print_eletro_widgets($id, $number, $id_base, $canvas_id, $refresh = false) {
+    
 
     if ($id) {
-        $widgetName = $wp_registered_widgets[$id]['name'];
+        
 
-        if (is_array($wp_registered_widgets[$id]['callback'])) {
+        if (class_exists($id)) {
 			// Multi Widget
-			$className = get_class($wp_registered_widgets[$id]['callback'][0]);
-			$newWidget = new $className;
+            $widgetName = $id_base;
+			$newWidget = new $id;
 			$newWidget->_set($number);
 
 			if (current_user_can('manage_eletro_widgets')) {
@@ -231,6 +231,8 @@ function print_eletro_widgets($id, $number, $canvas_id, $refresh = false) {
 
 		} else {
 			// Single Widget
+            global $wp_registered_widgets, $wp_registered_widget_controls;
+            $widgetName = $wp_registered_widgets[$id]['name'];
 			$callback = $wp_registered_widgets[$id]['callback'];
 			$callbackControl = $wp_registered_widget_controls[$id]['callback'];
 			$widgetType = 'single';
@@ -269,6 +271,7 @@ function print_eletro_widgets($id, $number, $canvas_id, $refresh = false) {
         echo "<input type='hidden' name='widget-number' value='$number'>";
         echo "<input type='hidden' name='widget-type' value='$widgetType'>";
         echo "<input type='hidden' name='canvas-id' value='$canvas_id'>";
+        echo "<input type='hidden' name='id_base' value='$id_base'>";
         echo "<input type='hidden' name='action' value='save_widget_options'>";
 
         echo '<div class="eletro_widgets_content">';
@@ -336,7 +339,5 @@ function eletroWidgetsUninstall() {
 
 register_activation_hook( __FILE__, 'eletroWidgetsInstall' );
 register_deactivation_hook( __FILE__, 'eletroWidgetsInstall' );
-
-
 
 ?>

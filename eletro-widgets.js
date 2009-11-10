@@ -133,7 +133,8 @@ jQuery.extend(eletroCanvas.prototype, {
                     action: 'add',
                     widget_number: widget_number,
                     canvas_id: th.index,
-                    widget_id: widget_id
+                    widget_id: widget_id,
+                    id_base: id_base
                 },
                 complete: function() 
                 {
@@ -156,7 +157,8 @@ jQuery.extend(eletroCanvas.prototype, {
             jQuery(this).find('div.itemDrag:not(".ui-sortable-helper")').each(function() {
                 var number = jQuery(this).children('input[name=widget-number]').val();
                 var id = jQuery(this).children('input[name=widget-id]').val();
-                var widget = id + 'X|X' + number;
+                var id_base = jQuery(this).children('input[name=id_base]').val();
+                var widget = id + 'X|X' + number + 'X|X' + id_base;
             	thisItems.push(widget);
             });            
             values.push(thisItems);
@@ -179,6 +181,7 @@ jQuery.extend(eletroCanvas.prototype, {
         var th = this;
         var widgetID = jQuery('#' + th.id).find('#' + instanceID).children('input[name=widget-id]').val();
         var widgetNumber = jQuery('#' + th.id).find('#' + instanceID).children('input[name=widget-number]').val();
+        var id_base = jQuery('#' + th.id).find('#' + instanceID).children('input[name=id_base]').val();
         widgetContent = jQuery.ajax({
                 type: 'POST',
                 url: eletro.ajaxurl,
@@ -189,7 +192,8 @@ jQuery.extend(eletroCanvas.prototype, {
                     refresh: 1,
                     widget_id: widgetID,
                     widget_number: widgetNumber,
-                    canvas_id: th.index
+                    canvas_id: th.index,
+                    id_base: id_base
                 },
                 complete: function() 
                 {
@@ -277,7 +281,7 @@ jQuery.extend(eletroItem.prototype, {
         	
             canvas.updateControl(id, false);
             
-            var data = jQuery(this).parents('div.itemDrag').find('input').serialize();
+            var data = jQuery(this).parents('div.itemDrag').find('input, select, textarea').serialize();
         	
         	debug = jQuery.ajax({
                 type: 'POST',

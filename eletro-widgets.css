@@ -19,14 +19,13 @@ span.itemDrag {
     margin: 0 0 18px 0;
 }
 
-div.eletro_widgets_col {
-    border: none;
+div#eletro_widgets_col_0 {
     float: left;
-    margin: 0 5px;
-    min-height: 50px;    
 }
 
-
+div#eletro_widgets_col_1 {
+    float: right;
+}
 
 /* Esses são os estilos das colunas e dos itens de cada set de Eletro Widgets. Crie mais conforme necessário */
 /* These are the styles applied to the columns and items of each eletro-widgets set. Create new one as needed */

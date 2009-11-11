@@ -43,6 +43,7 @@
 
 div.itemDrag {
 	/* border: 1px solid #ccc; */
+    clear: both;
 }
 
 div.itemDrag span.itemDrag {
@@ -58,6 +59,7 @@ div.itemDrag span.itemDrag a {
 
 div.eletro_widgets_col {
 	border: 1px dashed #ccc;
+    min-height: 18px;
 }
 
 div.itemDrag span.itemDrag a.edit {
@@ -79,11 +81,15 @@ div.itemDrag span.itemDrag a:hover {
 }
 
 .dragAjuda {
-	border: 3px dashed #0066cc;	
+    background: #eff4f8;
+    border: 1px dashed #0066cc;
+    height: 18px;
+    margin: 3px;    
 }
 
 
 .eletro_widgets_content {
+    clear: both;
     margin: 0 0 18px 0;
-    padding: 0 9px;
+    padding: 0 0px;
 }

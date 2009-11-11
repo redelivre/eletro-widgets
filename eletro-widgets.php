@@ -310,6 +310,7 @@ function print_eletro_widgets($id, $number, $id_base, $canvas_id, $refresh = fal
 
             echo '<input class="save" name="save" type="button" value="Save">';
             echo "</div>";
+            echo '<div class="clearfix"></div>';
         }
 
         if (!$refresh) {

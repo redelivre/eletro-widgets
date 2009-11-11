@@ -26,6 +26,7 @@ switch ($_POST['action']) {
             
             $newWidget = new $id;
             $newWidget->_set($number);
+            $newOptions = stripslashes_deep($newOptions);
             $newOptions = $newWidget->update($newOptions, $oldOptions);
             
             if (is_array( $options[$canvas_id]['widgets_options'][$id] )) {

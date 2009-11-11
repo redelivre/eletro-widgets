@@ -167,12 +167,13 @@ class EletroWidgets {
 
 	        $args = array('widget_name' => $widget['name'], '_display' => 'template');
 
-	        if (isset($wp_registered_widget_controls[$widget['id']]['id_base']) && isset($widget['params'][0]['number'])) {
+	        if (is_object($widget['callback'][0])) {
 	            $id_base = $wp_registered_widget_controls[$widget['id']]['id_base'];
 	            $args['_multi_num'] = $this->next_widget_id_number($id_base);
                 $args['_add'] = 'multi';
 	            $args['_id_base'] = $id_base;
-	            $args['widget_id'] = get_class($widget['callback'][0]);
+		        if (!is_object($widget['callback'][0])) print_r($widget);
+		        $args['widget_id'] = get_class($widget['callback'][0]);
 	            $args['_multi_num'] = $this->next_widget_id_number($args['widget_id']);
 	        } else {
 	            $args['_add'] = 'single';
@@ -206,10 +207,10 @@ class EletroWidgets {
 }
 
 function print_eletro_widgets($id, $number, $id_base, $canvas_id, $refresh = false) {
-    
+
 
     if ($id) {
-        
+
 
         if (class_exists($id)) {
 			// Multi Widget

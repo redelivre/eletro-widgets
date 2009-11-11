@@ -82,6 +82,7 @@ class EletroWidgets {
             echo '</div>';
 
             echo '<div class="eletro_widgets_buttons">';
+            echo '<a class="eletroToggleControls">' . __('Show/Hide Controls', 'eletroWidgets') . '</a>';
             echo '<a class="eletroClearAll">' . __('Clear all widgets', 'eletroWidgets') . '</a>';
             echo '<a class="eletroApply">' . __('Apply to public', 'eletroWidgets') . '</a>';
             echo '<a class="eletroRestore">' . __('Restore from public', 'eletroWidgets') . '</a>';
@@ -97,6 +98,7 @@ class EletroWidgets {
         // Get saved widgets and print them
         if (current_user_can('manage_eletro_widgets')) {
             $options = get_option('eletro_widgets');
+            $dashedCols = 'eletro_widgets_dashed';
         } else {
             $options = get_option('eletro_widgets_public');
         }
@@ -104,7 +106,7 @@ class EletroWidgets {
         $colunas = $options[$this->id]['widgets'];
 
         for ($i = 0; $i < $this->cols; $i ++) {
-            echo "<div class='eletro_widgets_col' id='eletro_widgets_col_$i'>";
+            echo "<div class='eletro_widgets_col $dashedCols' id='eletro_widgets_col_$i'>";
             if (is_array($colunas[$i])) {
                 foreach ($colunas[$i] as $w) {
                     print_eletro_widgets($w['id'], $w['number'], $w['id_base'], $this->id);

@@ -58,8 +58,11 @@ div.itemDrag span.itemDrag a {
 }
 
 div.eletro_widgets_col {
-	border: 1px dashed #ccc;
     min-height: 18px;
+}
+
+.eletro_widgets_dashed {
+    border: 1px dashed #ccc;
 }
 
 div.itemDrag span.itemDrag a.edit {

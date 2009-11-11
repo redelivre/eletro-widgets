@@ -22,6 +22,8 @@ jQuery.extend(eletroCanvas.prototype, {
         
         //add button behavior
         jQuery('#' + this.id).find('.eletro_widgets_add_button').click(function() {
+            if (!jQuery('#' + th.id + ' #eletro_widgets_col_0').hasClass('eletro_widgets_dashed'))
+                th.toggleControls();
             th.add(jQuery(this));
         });
         
@@ -31,6 +33,11 @@ jQuery.extend(eletroCanvas.prototype, {
         	if (jQuery(this).val()) {
         		jQuery('#' + th.id).find('#widget_add_control_' + jQuery(this).val()).show();
         	}
+        });
+        
+        //toggleControls behavior
+        jQuery('#' + this.id).find('.eletroToggleControls').click(function() {
+            th.toggleControls();
         });
         
         //eletroClearAll behavior
@@ -81,6 +88,11 @@ jQuery.extend(eletroCanvas.prototype, {
             }
         });
         
+    },
+    
+    toggleControls: function() {
+        jQuery('#' + this.id + ' .eletro_widgets_col').toggleClass('eletro_widgets_dashed');
+        jQuery('#' + this.id + ' div.eletro_widgets_content span.itemDrag').toggle();
     },
     
     save: function() {

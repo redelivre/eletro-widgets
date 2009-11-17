@@ -26,6 +26,7 @@
 
 #eletro_widgets_control .eletro_widgets_buttons a {
     background: #ccc;
+    color: black;
     cursor: pointer;
     display: block;
     float:left; 

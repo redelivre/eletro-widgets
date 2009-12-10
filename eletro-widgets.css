@@ -9,16 +9,6 @@
     overflow: hidden;
 }
 
-span.itemDrag {
-	background-color: #f0f0f0;
-	color: #333;
-	display: block;
-	font-weight: bold;
-	padding: 3px 9px;
-	position: relative;
-    margin: 0 0 18px 0;
-}
-
 div#eletro_widgets_col_0 {
     float: left;
 }

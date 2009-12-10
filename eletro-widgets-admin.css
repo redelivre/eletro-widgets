@@ -41,12 +41,39 @@
     color: white;
 }
 
+.eletro_widgets_control {
+    padding: 0 10px 10px 10px;
+}
+
 .eletro_widgets_control table {
     width: 100%;
 }
 .eletro_widgets_control table tr td {
 
 }
+.eletro_widgets_control_row {
+   background: #f1f1f1;
+   margin: 0 0 9px 0;
+   padding: 10px;
+}
+
+.eletro_widgets_control_row h3 {
+    padding: 0 0 18px 0;
+}
+
+.eletro_widgets_control_row p {
+    margin: 0 9px 12px 9px;
+}
+
+.eletro_widgets_control_row label {
+    margin: 0 0 0 9px;
+}
+
+.eletro_widgets_control_row input,
+.eletro_widgets_control_row select {
+    margin: 0 9px;
+}
+
 
 
 /*=END Eletro Widgets Control Bar
@@ -74,7 +101,7 @@ div.eletro_widgets_col {
 }
 
 .eletro_widgets_dashed {
-    border: 1px dashed #ccc;
+    border: 1px dashed #dadada;
 }
 
 div.itemDrag span.itemDrag a.edit {
@@ -107,4 +134,19 @@ div.itemDrag span.itemDrag a:hover {
     clear: both;
     margin: 0 0 18px 0;
     padding: 0 0px;
+}
+
+span.itemDrag {
+	background: #333;
+	color: white;
+	display: block;
+	font-weight: bold;
+	padding: 3px 9px;
+	position: relative;
+    margin: 0 0 18px 0;
+}
+
+
+.save {
+    
 }

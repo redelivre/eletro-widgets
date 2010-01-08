@@ -63,7 +63,7 @@ jQuery.extend(eletroCanvas.prototype, {
                         canvas_id: th.index
                     },
                     complete: function() {
-                        alert('listo');
+                        alert(eletro.feedbackApply);
                     }
                 });
             }
@@ -310,9 +310,12 @@ jQuery.extend(eletroItem.prototype, {
     },
     
     remove: function(id, canvas) {
-        jQuery('#' + canvas.id).find('#' + id).remove();
-        canvas.save();
-        canvas.updateControl(id, false);
+    	if (confirm(eletro.confirmRemove)) {
+    		jQuery('#' + canvas.id).find('#' + id).remove();
+            canvas.save();
+            canvas.updateControl(id, false);
+    	}
+    	
     }
 
 });

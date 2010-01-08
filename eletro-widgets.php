@@ -26,9 +26,11 @@ function eletrowidgets_print_scripts() {
         wp_enqueue_script('eletro-widgets', EW_URLPATH . 'eletro-widgets.js', array('jquery', 'jquery-ui-sortable'));
         $messages = array(
             'ajaxurl' => EW_URLPATH.'eletro-widgets-ajax.php',
-            'confirmClear' => 'Are you sure you want to clear all widgets and its settings from this canvas?',
-            'confirmApply' => 'Are you sure you want to apply this configuration to the public view of this canvas?',
-            'confirmRestore' => 'Are you sure you want to copy the settings from the public view and loose any changes you have made?'
+            'confirmClear' => __('Are you sure you want to clear all widgets and its settings from this canvas?', 'eletroWidgets'),
+            'confirmApply' => __('Are you sure you want to apply this configuration to the public view of this canvas?', 'eletroWidgets'),
+            'confirmRestore' => __('Are you sure you want to copy the settings from the public view and loose any changes you have made?', 'eletroWidgets'),
+            'feedbackApply' => __('Widgets applied', 'eletroWidgets'),
+            'confirmRemove' => __('Are you sure you want to remove this widget?', 'eletroWidgets')
         );
         wp_localize_script('eletro-widgets', 'eletro', $messages);
     }
@@ -77,7 +79,6 @@ class EletroWidgets {
             echo "<div id='eletro_widgets_control'>";
 
             echo '<div class="eletro_list_widgets">';
-            echo __('Add new Widget: ', 'eletrow');
             $this->list_widgets();
             echo '</div>';
 
@@ -189,8 +190,10 @@ class EletroWidgets {
 
             $addControls .= $this->get_widget_on_list($args);
 	    }
-
+        echo '<div class="eletro_widgets_add_select">';
+	    echo __('Add new Widget: ', 'eletrow');
 	    echo "<select id='eletro_widgets_add' name='eletro_widgets_add'>$selectBox</select>";
+	    echo '</div>';
 	    echo $addControls;
 	}
 

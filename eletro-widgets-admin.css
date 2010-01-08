@@ -41,6 +41,14 @@
     color: white;
 }
 
+#eletro_widgets_control .eletro_widgets_buttons .left {
+    float: left;
+}
+
+#eletro_widgets_control .eletro_widgets_buttons .right {
+    float: right;
+}
+
 .eletro_widgets_control {
     padding: 0 10px 10px 10px;
 }
@@ -51,6 +59,7 @@
 .eletro_widgets_control table tr td {
 
 }
+
 .eletro_widgets_control_row {
    background: #f1f1f1;
    margin: 0 0 9px 0;
@@ -73,8 +82,6 @@
 .eletro_widgets_control_row select {
     margin: 0 9px;
 }
-
-
 
 /*=END Eletro Widgets Control Bar
  -----------------------------------------------------*/
@@ -149,4 +156,8 @@ span.itemDrag {
 
 .save {
     
+}
+
+.eletro_widgets_add_select {
+    float: left;
 }

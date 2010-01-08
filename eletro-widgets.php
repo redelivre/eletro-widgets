@@ -83,10 +83,14 @@ class EletroWidgets {
             echo '</div>';
 
             echo '<div class="eletro_widgets_buttons">';
+            echo '<div class="left">';
             echo '<a class="eletroToggleControls">' . __('Show/Hide Controls', 'eletroWidgets') . '</a>';
-            echo '<a class="eletroClearAll">' . __('Clear all widgets', 'eletroWidgets') . '</a>';
-            echo '<a class="eletroApply">' . __('Apply to public', 'eletroWidgets') . '</a>';
+            echo '<a class="eletroClearAll">' . __('Clear all widgets', 'eletroWidgets') . '</a>';            
             echo '<a class="eletroRestore">' . __('Restore from public', 'eletroWidgets') . '</a>';
+            echo '</div>';
+            echo '<div class="right">';
+            echo '<a class="eletroApply">' . __('Apply to public', 'eletroWidgets') . '</a>';
+            echo '</div>';
             echo '</div>';
 
             echo '<div class="clearfix"></div>';

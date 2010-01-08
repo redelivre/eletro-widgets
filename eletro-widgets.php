@@ -17,6 +17,13 @@ define('EW_URLPATH', WP_CONTENT_URL.'/plugins/'.plugin_basename( dirname(__FILE_
 add_action('wp_print_scripts', 'eletrowidgets_print_scripts');
 add_action('wp_print_styles', 'eletrowidgets_print_styles');
 
+add_action('init', 'eletrowidgets_load_textdomain');
+
+function eletrowidgets_load_textdomain() {
+	$pluginFolder = plugin_basename( dirname(__FILE__) );
+    load_plugin_textdomain('eletroWidgets', "wp-content/plugins/$pluginFolder/lang", "$pluginFolder/lang");
+}
+
 function eletrowidgets_print_scripts() {
 
     // Since we only need JS when admin is logged in, its ok to add it everywhere
@@ -208,7 +215,7 @@ class EletroWidgets {
 		$r .= "<input type='hidden' class='widget-id' name='widget-id' value='{$args['widget_id']}'>";
 		$r .= "<input type='hidden' class='add' name='add' value='{$args['_add']}'>";
 
-		$r .= "<input type='button' value='".__('Add', 'eletrow')."' class='eletro_widgets_add_button'>";
+		$r .= "<input type='button' value='".__('Add', 'eletroWidgets')."' class='eletro_widgets_add_button'>";
 		$r .= '</div>';
 
 		return $r;

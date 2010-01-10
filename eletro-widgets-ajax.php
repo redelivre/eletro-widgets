@@ -104,6 +104,9 @@ switch ($_POST['action']) {
         
         update_option('eletro_widgets_public', $publicOptions);
         
+        // if using wp-super-cache, clean the cache
+        if (function_exists('wp_cache_clean_cache')) wp_cache_clean_cache('wp-cache');
+        
         break;
         
     case 'restore' :

@@ -41,13 +41,9 @@
     color: white;
 }
 
-#eletro_widgets_control .eletro_widgets_buttons a.eletroApply:hover {
-    background: #A60000;
-    color: white;
-}
-
+#eletro_widgets_control .eletro_widgets_buttons a.eletroApply:hover,
 #eletro_widgets_control .eletro_widgets_buttons a.eletroRestore:hover {
-    background: green;
+    background: #A60000;
     color: white;
 }
 
@@ -123,14 +119,14 @@ div.eletro_widgets_col {
 
 div.itemDrag span.itemDrag a.edit {
     right: 28px;
-    background-image: url("img/application_edit.png");
+    background-image: url("../img/application_edit.png");
     height:16px;
     width: 16px;
 }
 
 div.itemDrag span.itemDrag a.remove {
     right: 5px;
-    background-image: url("img/application_delete.png");
+    background-image: url("../img/application_delete.png");
     height:16px;
     width: 16px;
 }

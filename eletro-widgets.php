@@ -28,11 +28,9 @@ function eletrowidgets_print_scripts() {
 
     // Since we only need JS when admin is logged in, its ok to add it everywhere
     if (current_user_can('manage_eletro_widgets')) {
-        #wp_enqueue_script('jquery');
-        #wp_enqueue_script('jquery-ui-sortable');
-        wp_enqueue_script('eletro-widgets', EW_URLPATH . 'eletro-widgets.js', array('jquery', 'jquery-ui-sortable'));
+        wp_enqueue_script('eletro-widgets', EW_URLPATH . 'js/eletro-widgets.js', array('jquery', 'jquery-ui-sortable'));
         $messages = array(
-            'ajaxurl' => EW_URLPATH.'eletro-widgets-ajax.php',
+            'ajaxurl' => EW_URLPATH.'ajax/eletro-widgets-ajax.php',
             'confirmClear' => __('Are you sure you want to clear all widgets and its settings from this canvas?', 'eletroWidgets'),
             'confirmApply' => __('Are you sure you want to apply this configuration to the public view of this canvas?', 'eletroWidgets'),
             'confirmRestore' => __('Are you sure you want to copy the settings from the public view and loose any changes you have made?', 'eletroWidgets'),
@@ -47,10 +45,10 @@ function eletrowidgets_print_scripts() {
 function eletrowidgets_print_styles() {
 
     if (current_user_can('manage_eletro_widgets')) {
-        wp_enqueue_style('eletro-widgets-admin', EW_URLPATH.'eletro-widgets-admin.css');
+        wp_enqueue_style('eletro-widgets-admin', EW_URLPATH.'css/eletro-widgets-admin.css');
     }
 
-    $css = file_exists(TEMPLATEPATH . '/eletro-widgets.css') ? get_bloginfo('template_url') . '/eletro-widgets.css' : EW_URLPATH . 'eletro-widgets.css';
+    $css = file_exists(TEMPLATEPATH . '/eletro-widgets.css') ? get_bloginfo('template_url') . '/eletro-widgets.css' : EW_URLPATH . 'css/eletro-widgets.css';
     wp_enqueue_style('eletro-widgets', $css);
 }
 
@@ -152,7 +150,7 @@ class EletroWidgets {
 	/**
 	 * Output a select box with the list of avaliable widgets types
 	 *
-	 * Based on the function list_widgets() locate on the file wp-admin/includes/widgets.php
+	 * Based on the function list_widgets() on the file wp-admin/includes/widgets.php
 	 *
 	 * @return void
 	 */
@@ -202,7 +200,7 @@ class EletroWidgets {
             $addControls .= $this->get_widget_on_list($args);
 	    }
         echo '<div class="eletro_widgets_add_select">';
-	    echo __('Add new Widget: ', 'eletrow');
+	    echo __('Add new Widget: ', 'eletroWidgets');
 	    echo "<select id='eletro_widgets_add' name='eletro_widgets_add'>$selectBox</select>";
 	    echo '</div>';
 	    echo $addControls;
@@ -233,7 +231,7 @@ function print_eletro_widgets($id, $number, $id_base, $canvas_id, $refresh = fal
             $widgetName = $id_base;
 			$newWidget = new $id;
 			$newWidget->_set($number);
-
+			$widgetNiceName = $newWidget->name;
 			if (current_user_can('manage_eletro_widgets')) {
                 $options = get_option('eletro_widgets');
             } else {
@@ -249,32 +247,21 @@ function print_eletro_widgets($id, $number, $id_base, $canvas_id, $refresh = fal
 		} else {
 			// Single Widget
             global $wp_registered_widgets, $wp_registered_widget_controls;
-            $widgetName = $wp_registered_widgets[$id]['name'];
+            $widgetName = $widgetNiceName = $wp_registered_widgets[$id]['name'];
 			$callback = $wp_registered_widgets[$id]['callback'];
 			$callbackControl = $wp_registered_widget_controls[$id]['callback'];
 			$widgetType = 'single';
 			$widgetDivID = $id;
 		}
 
-        if (current_user_can('manage_eletro_widgets')) {
-            $params = array(
-                'name' => $widgetName,
-                'id' => $id,
-                'before_widget' => '',
-                'after_widget' => '',
-                'before_title' => '<h2>',
-                'after_title' => '</h2>',
-            );
-        } else {
-            $params = array(
-                'name' => $widgetName,
-                'id' => $id,
-                'before_widget' => '',
-                'after_widget' => '',
-                'before_title' => '<h2>',
-                'after_title' => '</h2>',
-            );
-        }
+		$params = array(
+			'name' => $widgetName,
+			'id' => $id,
+			'before_widget' => '',
+			'after_widget' => '',
+			'before_title' => '<h2>',
+			'after_title' => '</h2>',
+		);
 
         // This is weird, but is needed
         if ($widgetType == 'single')
@@ -294,7 +281,7 @@ function print_eletro_widgets($id, $number, $id_base, $canvas_id, $refresh = fal
         echo '<div class="eletro_widgets_content">';
 
         if (current_user_can('manage_eletro_widgets'))
-            echo '<span class="itemDrag">' . $widgetName . '</span>';
+            echo '<span class="itemDrag">' . $widgetNiceName . '</span>';
 
         // Print Widget
         if ($widgetType == 'multi') {

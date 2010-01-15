@@ -1,6 +1,6 @@
 <?php
 
-require_once('../../../wp-load.php');
+require_once('../../../../wp-load.php');
 
 global $wp_registered_widgets, $wp_registered_widget_controls, $wp_registered_widget_updates;
 
@@ -34,7 +34,6 @@ switch ($_POST['action']) {
             } else {
                 $options[$canvas_id]['widgets_options'][$id] = array($number => $newOptions);
             }
-            #echo '<pre>'; print_r($options); echo '</pre>';
             update_option('eletro_widgets', $options);
             
         } else {

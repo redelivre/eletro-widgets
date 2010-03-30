@@ -45,3 +45,21 @@ div#eletro_widgets_col_1 {
 }
 /* Fim dos estilos para o container 1 */
 /* End of styles for container 1 */
+
+
+/* Esses são os estilos dos widgets inseridos no Eletro Widgets. Crie mais conforme necessário */
+/* These are the styles of the widgets inside of Eletro Widgets. Create new one as needed */
+.eletro_widgets_content {
+    border-bottom: 1px dotted #BBBBBB;
+}
+
+.eletro_widgets_content h2 {
+    border-bottom: 1px solid #333333;
+}
+.eletro_widgets_content ul {
+    margin: 9px 0 9px 9px;
+    padding: 3px 0 0 18px;
+}
+.eletro_widgets_content ul li {
+    line-height: 18px;
+}

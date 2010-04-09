@@ -282,7 +282,7 @@ function print_eletro_widgets($id, $number, $id_base, $canvas_id, $refresh = fal
         echo "<input type='hidden' name='id_base' value='$id_base'>";
         echo "<input type='hidden' name='action' value='save_widget_options'>";
 
-        echo '<div class="eletro_widgets_content">';
+        echo '<div class="eletro_widgets_content ' . $widgetName . '">';
 
         if (current_user_can('manage_eletro_widgets'))
             echo '<span class="itemDrag">' . $widgetNiceName . '</span>';

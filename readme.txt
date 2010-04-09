@@ -3,8 +3,8 @@ Contributors: HackLab
 Donate link: 
 Tags: widgets, home, cms
 Requires at least: 2.7
-Tested up to: 2.7.1
-Stable tag: 0.1
+Tested up to: 2.9.2
+Stable tag: 1.0
 
 Allows you to use the power and flexibility of the WordPress Widgets to set up a dynamic area anywhere in your site and manage multiple columns of widgets, dragging and dropping them around
 
@@ -20,6 +20,10 @@ Allows you to use the power and flexibility of the WordPress Widgets to set up a
 4. See Other Notes for more details on how to configure and use this plugin
 
 == Usage ==
+
+<code>
+<?php new EletroWidgets([$cols = 2][, $id = 0] [, $onlyEletroWidgets = false]); ?>
+</code>
 
 The basics:
 
@@ -60,7 +64,18 @@ Example:
 </code>
 Note: There MUST be at least one container with the ID 0 (zero). All you have to do is declare at least one EletroWidget leaving the ID parameter empty
 
-After that, make sure you have styles for all the containers in your eletro-widgets.css file. There are examples in this file so you can create as much containers as you need.
+
+== How to restrict available widgets==
+
+You may want to choose only a few widgets to be available on your eletro widget canvas.
+
+You can do that by passing the third paramater as true. It will tell this canvas to hide from the list of available widgets all the widgets that were not defined as an "eletro-widget".
+
+To define a widget as an "eletro-widget", do the following:
+
+<code>
+<?php defineAsEletroWidget($widgetId); ?>
+</code>
 
 == Screenshots ==
 

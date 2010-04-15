@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Eletro Widgets
-Plugin URI:
+Plugin URI: http://eletrowidgets.hacklab.com.br
 Description: Allows you to use the power and flexibility of the WordPress Widgets to set up a dynamic area anywhere in your site and manage multiple columns of widgets, dragging and dropping them around
 Author: HackLab
 Version: 1.0

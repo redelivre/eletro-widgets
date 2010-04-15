@@ -1,6 +1,6 @@
 === Eletro Widgets ===
 Contributors: HackLab
-Donate link: 
+Donate link: http://eletrowidgets.hacklab.com.br
 Tags: widgets, home, cms
 Requires at least: 2.7
 Tested up to: 2.9.2

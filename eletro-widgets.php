@@ -65,7 +65,7 @@ function eletrowidgets_print_styles() {
 
 class EletroWidgets {
 
-    function EletroWidgets($cols = 2, $id = 0, $onlyEletro = false) {
+    function __construct($cols = 2, $id = 0, $onlyEletro = false) {
 
         $this->id = $id;
         $this->cols = $cols;
